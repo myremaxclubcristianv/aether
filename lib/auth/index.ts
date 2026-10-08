@@ -9,6 +9,7 @@ import { User } from '@supabase/supabase-js';
 export async function signUp(email: string, password: string, username?: string) {
   const supabase = createClient();
   const cleanUsername = username?.trim() || `user_${Math.random().toString(36).substring(2, 10)}`;
+  const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/login` : undefined;
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -16,6 +17,7 @@ export async function signUp(email: string, password: string, username?: string)
       data: {
         username: cleanUsername,
       },
+      emailRedirectTo: redirectTo,
     },
   });
   
