@@ -6,6 +6,18 @@ import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+const RESERVED_USERNAMES = new Set([
+  'founder',
+  'api',
+  'admin',
+  'circle',
+  'home',
+  'proof',
+  'login',
+  'onboarding',
+  'profile',
+]);
+
 interface PageProps {
   params: Promise<{ username: string }>;
 }
@@ -18,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   username = username.trim();
 
-  if (!username) {
+  if (!username || RESERVED_USERNAMES.has(username.toLowerCase())) {
     return {
       title: 'Profile • Aether',
       description: 'Track real achievements and verified proofs on Aether.',
@@ -63,7 +75,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
   }
   username = username.trim();
 
-  if (!username) {
+  if (!username || RESERVED_USERNAMES.has(username.toLowerCase())) {
     notFound();
   }
 
