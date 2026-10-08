@@ -101,8 +101,8 @@ export default function OnboardingPage() {
     const cleanUsername = username.toLowerCase().trim();
 
     // Basic validation
-    if (cleanUsername.length < 3) {
-      setError('Username must be at least 3 characters.');
+    if (cleanUsername.length < 3 || cleanUsername.length > 30) {
+      setError('Username must be between 3 and 30 characters.');
       setLoading(false);
       return;
     }
@@ -114,26 +114,47 @@ export default function OnboardingPage() {
       return;
     }
 
+    const cleanBio = bio.trim().slice(0, 500);
+
     try {
       const supabase = createClient();
       let finalAvatarUrl = avatarUrl.trim() || null;
 
       // Upload avatar file to storage if user selected a file
       if (avatarFile) {
-        const fileExt = avatarFile.name.split('.').pop() || 'jpg';
-        const filePath = `${userId}/avatar-${Date.now()}.${fileExt}`;
+        const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+        if (avatarFile.size > MAX_AVATAR_SIZE) {
+          throw new Error('Avatar image exceeds the 5MB size limit.');
+        }
+
+        const ALLOWED_MIME_TYPES: Record<string, string> = {
+          'image/jpeg': 'jpg',
+          'image/jpg': 'jpg',
+          'image/png': 'png',
+          'image/webp': 'webp',
+          'image/gif': 'gif',
+        };
+
+        const mime = (avatarFile.type || '').toLowerCase();
+        const safeExt = ALLOWED_MIME_TYPES[mime];
+        if (!safeExt) {
+          throw new Error('Invalid avatar image format. Allowed formats: JPG, PNG, WEBP, GIF.');
+        }
+
+        const safeRandom = Math.random().toString(36).substring(2, 8);
+        const filePath = `${userId}/avatar-${Date.now()}_${safeRandom}.${safeExt}`;
 
         // Attempt upload to 'avatars' bucket, fallback to 'proof-images'
         let uploadBucket = 'avatars';
         const { error: uploadErr } = await supabase.storage
           .from(uploadBucket)
-          .upload(filePath, avatarFile, { upsert: true });
+          .upload(filePath, avatarFile, { upsert: true, contentType: mime });
 
         if (uploadErr) {
           uploadBucket = 'proof-images';
           const { error: fallbackErr } = await supabase.storage
             .from(uploadBucket)
-            .upload(filePath, avatarFile, { upsert: true });
+            .upload(filePath, avatarFile, { upsert: true, contentType: mime });
 
           if (fallbackErr) {
             console.error('Avatar upload error:', fallbackErr);
@@ -155,7 +176,7 @@ export default function OnboardingPage() {
           {
             id: userId,
             username: cleanUsername,
-            bio: bio.trim() || null,
+            bio: cleanBio || null,
             avatar_url: finalAvatarUrl,
           },
           { onConflict: 'id' }

@@ -36,30 +36,32 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
     redirect('/login?redirect=/admin/analytics');
   }
 
-  // Admin Access Verification
+  // Admin Access Verification (Strict Fail-Closed)
   const adminEmailsEnv = process.env.ADMIN_EMAILS || '';
-  if (adminEmailsEnv) {
-    const allowedEmails = adminEmailsEnv.split(',').map((e) => e.trim().toLowerCase());
-    const userEmail = (user.email || '').toLowerCase();
-    if (!allowedEmails.includes(userEmail)) {
-      return (
-        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-12 h-12 rounded-full bg-red-950/40 border border-red-900 flex items-center justify-center text-red-400 mb-4">
-            <AlertCircle className="w-6 h-6" />
-          </div>
-          <h1 className="text-xl font-semibold text-white mb-1">Access Restricted</h1>
-          <p className="text-xs text-zinc-400 max-w-sm mb-6">
-            Your account ({user.email}) does not have administrative privileges to view internal product intelligence.
-          </p>
-          <Link
-            href="/home"
-            className="px-5 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-xs font-mono text-white border border-zinc-800 transition-colors"
-          >
-            Return to Home
-          </Link>
+  const allowedEmails = adminEmailsEnv
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const userEmail = (user.email || '').toLowerCase();
+
+  if (allowedEmails.length === 0 || !allowedEmails.includes(userEmail)) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-12 h-12 rounded-full bg-red-950/40 border border-red-900 flex items-center justify-center text-red-400 mb-4">
+          <AlertCircle className="w-6 h-6" />
         </div>
-      );
-    }
+        <h1 className="text-xl font-semibold text-white mb-1">Access Restricted</h1>
+        <p className="text-xs text-zinc-400 max-w-sm mb-6">
+          Your account ({user.email || 'unknown'}) does not have administrative privileges to view internal product intelligence.
+        </p>
+        <Link
+          href="/home"
+          className="px-5 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-xs font-mono text-white border border-zinc-800 transition-colors"
+        >
+          Return to Home
+        </Link>
+      </div>
+    );
   }
 
   const resolvedParams = await searchParams;

@@ -78,6 +78,7 @@ export async function sendTelegramMessage(text: string): Promise<boolean> {
   }
 
   try {
+    const safeText = (text || '').slice(0, 4000);
     const url = `https://api.telegram.org/bot${token}/sendMessage`;
     const response = await fetch(url, {
       method: 'POST',
@@ -86,7 +87,7 @@ export async function sendTelegramMessage(text: string): Promise<boolean> {
       },
       body: JSON.stringify({
         chat_id: chatId,
-        text,
+        text: safeText,
         disable_web_page_preview: true,
       }),
     });

@@ -5,12 +5,21 @@ import { UserProfile, ProofWithProfile, DbProfile, DbProof } from '@/types';
 import { notifyFollow } from '@/lib/telegram';
 
 /**
- * Follow another user. Checks checks are handled via DB RLS & constraints.
+ * Follow another user. Checks are enforced server-side and via DB RLS & constraints.
  */
 export async function followUser(followerId: string, followingId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const actualFollowerId = user?.id || followerId;
+  
+  if (!user) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  const actualFollowerId = user.id;
+
+  if (actualFollowerId === followingId) {
+    return { success: false, error: 'Cannot follow yourself' };
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('follows') as any)
@@ -45,7 +54,12 @@ export async function followUser(followerId: string, followingId: string) {
 export async function unfollowUser(followerId: string, followingId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const actualFollowerId = user?.id || followerId;
+  
+  if (!user) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  const actualFollowerId = user.id;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('follows') as any)
@@ -237,7 +251,7 @@ export async function getSuggestedUsers(userId: string): Promise<UserProfile[]> 
  */
 export async function searchUsers(query: string, currentUserId?: string, limit = 20): Promise<UserProfile[]> {
   const supabase = await createClient();
-  const cleanQuery = query.trim().replace(/^@+/, '');
+  const cleanQuery = query.trim().replace(/^@+/, '').slice(0, 50).replace(/[^a-zA-Z0-9_]/g, '');
 
   if (!cleanQuery) return [];
 
@@ -246,7 +260,7 @@ export async function searchUsers(query: string, currentUserId?: string, limit =
     .select('*')
     .ilike('username', `%${cleanQuery}%`)
     .order('flex_score', { ascending: false })
-    .limit(limit);
+    .limit(Math.min(Math.max(1, limit), 50));
 
   if (currentUserId) {
     dbQuery = dbQuery.neq('id', currentUserId);
