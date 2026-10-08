@@ -26,7 +26,7 @@ export default async function RootPage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 bg-black text-white min-h-screen selection:bg-zinc-800 selection:text-white">
+    <div className="flex flex-col flex-1 w-full max-w-xl lg:max-w-2xl mx-auto border-x border-zinc-900/80 bg-black text-white min-h-screen selection:bg-zinc-800 selection:text-white shadow-2xl">
       {/* Top Sticky Product Navigation */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-black/80 border-b border-zinc-900/80 px-5 py-3.5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">

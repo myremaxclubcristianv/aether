@@ -1,24 +1,23 @@
 import React from 'react';
-import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { getCircleFeed, getSuggestedUsers } from '@/lib/circle';
-import { DbProfile } from '@/types';
-import { CircleDashboard } from '@/components/circle/circle-dashboard';
+import { createClient } from '@/lib/supabase/server';
 import { AppShell } from '@/components/layout/app-shell';
+import { ProofForm } from '@/components/proof/proof-form';
+import { DbProfile } from '@/types';
 import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Circle • Aether',
-  description: 'Track real achievements from people who inspire you.',
+  title: 'Log Proof • Aether',
+  description: 'Document what you actually accomplished.',
 };
 
-export default async function CirclePage() {
+export default async function ProofPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
+  if (!user) {
     redirect('/login');
   }
 
@@ -44,18 +43,24 @@ export default async function CirclePage() {
     createdAt: profile.created_at,
   };
 
-  // Fetch initial circle feed and suggestion list on the server side
-  const initialFeed = await getCircleFeed(user.id);
-  const initialSuggestions = await getSuggestedUsers(user.id);
-
   return (
     <AppShell initialUser={userProfile}>
       <div className="flex flex-col gap-6 px-4 sm:px-6 py-6 sm:py-8">
-        <CircleDashboard
-          initialFeed={initialFeed}
-          initialSuggestions={initialSuggestions}
-          currentUserId={user.id}
-        />
+        <header className="flex flex-col gap-1 border-b border-zinc-900 pb-4">
+          <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-500">
+            NEW RECORD
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+            Create Proof
+          </h1>
+          <p className="text-xs text-zinc-400 font-light mt-0.5">
+            Make it count. Actions over appearances.
+          </p>
+        </header>
+
+        <main className="pt-2">
+          <ProofForm userId={user.id} />
+        </main>
       </div>
     </AppShell>
   );

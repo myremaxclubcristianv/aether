@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { PublicProfile } from '@/components/profile/public-profile';
-import { Navigation } from '@/components/navigation';
 import { UserProfile, ProofRecord, DbProfile, DbProof } from '@/types';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -98,20 +97,40 @@ export default async function PublicProfilePage({ params }: PageProps) {
     createdAt: p.created_at,
   }));
 
+  // Resolve viewer profile if authenticated
+  let viewerProfile: UserProfile | null = null;
+  if (viewerId) {
+    if (viewerId === profileData.id) {
+      viewerProfile = profile;
+    } else {
+      const { data: vData } = (await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', viewerId)
+        .maybeSingle()) as { data: DbProfile | null };
+      if (vData) {
+        viewerProfile = {
+          id: vData.id,
+          username: vData.username,
+          avatarUrl: vData.avatar_url,
+          bio: vData.bio,
+          flexScore: vData.flex_score,
+          streak: vData.streak,
+          createdAt: vData.created_at,
+        };
+      }
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 min-h-screen bg-black pb-28">
-      {/* Dynamic Profile view */}
-      <PublicProfile
-        profile={profile}
-        proofs={proofs}
-        viewerId={viewerId}
-        initialIsFollowing={initialIsFollowing}
-        initialFollowersCount={followersCount || 0}
-        followingCount={followingCount || 0}
-      />
-      
-      {/* Floating Bottom Navigation */}
-      <Navigation />
-    </div>
+    <PublicProfile
+      profile={profile}
+      proofs={proofs}
+      viewerId={viewerId}
+      viewerProfile={viewerProfile}
+      initialIsFollowing={initialIsFollowing}
+      initialFollowersCount={followersCount || 0}
+      followingCount={followingCount || 0}
+    />
   );
 }

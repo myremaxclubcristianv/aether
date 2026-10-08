@@ -1,76 +1,95 @@
 import React from 'react';
 import Image from 'next/image';
-import { ProofRecord } from '@/types';
-import { Card } from '@/components/ui/card';
+import Link from 'next/link';
+import { Dumbbell, BookOpen, Palette, Hammer, Sparkles, Trophy, CheckCircle2 } from 'lucide-react';
+import { ProofRecord, UserProfile } from '@/types';
+import { Avatar } from '@/components/ui/avatar';
 import { formatRelativeTime } from '@/lib/utils';
+
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Fitness: Dumbbell,
+  Learning: BookOpen,
+  Creating: Palette,
+  Building: Hammer,
+  Lifestyle: Sparkles,
+  Achievement: Trophy,
+};
 
 interface ProofCardProps {
   proof: ProofRecord;
+  author?: UserProfile;
 }
 
-export const ProofCard: React.FC<ProofCardProps> = ({ proof }) => {
-  // Parse caption into title and description if it follows "Title: Description" format
-  const colonIndex = proof.caption.indexOf(':');
-  let title = proof.caption;
-  let description = '';
-
-  if (colonIndex !== -1) {
-    title = proof.caption.substring(0, colonIndex).trim();
-    description = proof.caption.substring(colonIndex + 1).trim();
-  }
+export const ProofCard: React.FC<ProofCardProps> = ({ proof, author }) => {
+  const Icon = CATEGORY_ICONS[proof.category] || Sparkles;
 
   return (
-    <Card className="flex flex-col gap-3 group border-zinc-900 bg-zinc-950/20 hover:border-zinc-800 transition-all duration-200">
-      {/* Category and Points row */}
-      <div className="flex items-center justify-between text-[10px] font-mono tracking-wider">
-        <span className="uppercase text-zinc-500">{proof.category}</span>
-        {proof.points > 0 && (
-          <span className="text-zinc-300 bg-zinc-900/60 border border-zinc-800/40 px-2 py-0.5 rounded-sm">
-            +{proof.points} pts
-          </span>
+    <article className="flex flex-col gap-3 p-4 sm:p-5 rounded-2xl border border-zinc-900 bg-zinc-950/40 hover:border-zinc-800 transition-all duration-200 group">
+      {/* Header: Author (if provided) & Category / Points */}
+      <div className="flex items-center justify-between gap-3">
+        {author ? (
+          <Link
+            href={`/${author.username}`}
+            className="flex items-center gap-2.5 hover:opacity-85 transition-opacity min-w-0"
+          >
+            <Avatar src={author.avatarUrl || undefined} fallback={author.username} size="sm" />
+            <div className="flex flex-col min-w-0 text-left">
+              <span className="text-xs font-medium text-white truncate">@{author.username}</span>
+              <span className="text-[10px] font-mono text-zinc-500">{formatRelativeTime(proof.createdAt)}</span>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-1.5 text-zinc-400">
+            <Icon className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-medium">
+              {proof.category}
+            </span>
+          </div>
         )}
+
+        <div className="flex items-center gap-2 shrink-0">
+          {!author && (
+            <span className="text-[10px] font-mono text-zinc-550 hidden sm:inline">
+              {formatRelativeTime(proof.createdAt)}
+            </span>
+          )}
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full font-mono text-[10px] font-medium tracking-wide bg-zinc-900 border border-zinc-800 text-emerald-400">
+            +{proof.points || 10} FLEX
+          </span>
+        </div>
       </div>
 
+      {/* Caption Content */}
+      <p className="text-xs sm:text-sm text-zinc-200 font-light leading-relaxed whitespace-pre-line">
+        {proof.caption}
+      </p>
+
+      {/* Image Media Preview */}
       {proof.imageUrl && (
-        <div className="relative rounded-md overflow-hidden border border-zinc-900 bg-zinc-950/20 aspect-video mb-1">
+        <div className="relative rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 aspect-[16/9] w-full mt-1">
           <Image
             src={proof.imageUrl}
-            alt={title}
+            alt={proof.caption || 'Proof media'}
             fill
-            sizes="(max-width: 768px) 100vw, 400px"
-            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover group-hover:scale-[1.01] transition-transform duration-300"
           />
         </div>
       )}
 
-      {/* Main Info */}
-      <div className="flex flex-col gap-1">
-        <h3 className="text-[14px] font-medium text-white tracking-tight group-hover:text-zinc-100 transition-colors">
-          {title}
-        </h3>
-        {description && (
-          <p className="text-xs text-zinc-400 leading-relaxed font-light mt-0.5">
-            {description}
-          </p>
+      {/* Footer Verification Signature */}
+      <div className="flex items-center justify-between pt-2 border-t border-zinc-900/60 text-[10px] font-mono text-zinc-500">
+        <div className="flex items-center gap-1 text-zinc-500">
+          <CheckCircle2 className="w-3 h-3 text-zinc-500" />
+          <span>VERIFIED PROOF</span>
+        </div>
+        {author && (
+          <div className="flex items-center gap-1.5 text-zinc-400 font-medium">
+            <span>{proof.category}</span>
+          </div>
         )}
       </div>
-
-      {/* Verification footer */}
-      <div className="flex items-center justify-between pt-2 border-t border-zinc-900/40 text-[10px] font-mono text-zinc-500">
-        <span>{formatRelativeTime(proof.createdAt)}</span>
-
-        <span className="flex items-center gap-1 text-zinc-400 select-none">
-          <svg
-            className="h-3 w-3 stroke-[2.5px]"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-          <span>VERIFIED PROOF</span>
-        </span>
-      </div>
-    </Card>
+    </article>
   );
 };
+export default ProofCard;
