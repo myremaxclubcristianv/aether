@@ -22,6 +22,12 @@ export default async function RootPage() {
         </Link>
         <div className="flex items-center gap-3">
           <Link
+            href="/founder"
+            className="text-[11px] font-mono tracking-wider text-zinc-400 hover:text-white transition-colors px-2 py-1 uppercase"
+          >
+            FOUNDER
+          </Link>
+          <Link
             href="/login"
             className="text-[11px] font-mono tracking-wider text-zinc-400 hover:text-white transition-colors px-2 py-1"
           >
@@ -413,6 +419,7 @@ export default async function RootPage() {
         </div>
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
+          <Link href="/founder" className="text-white hover:text-zinc-300 font-medium transition-colors">Founder</Link>
           <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
           <Link href="/login" className="hover:text-white transition-colors">Get Started</Link>
           <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
