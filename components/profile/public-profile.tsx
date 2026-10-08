@@ -50,6 +50,16 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
           text: `Check out @${profile.username}'s verified achievements and Flex Score on Aether.`,
           url: profileUrl,
         });
+
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'PROFILE_SHARED',
+            username: profile.username,
+            method: 'native_share',
+          }),
+        }).catch(() => {});
         return;
       } catch {
         // Fallback to clipboard
@@ -61,6 +71,16 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
         await navigator.clipboard.writeText(profileUrl);
         setCopiedLink(true);
         setTimeout(() => setCopiedLink(false), 2000);
+
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'PROFILE_SHARED',
+            username: profile.username,
+            method: 'clipboard',
+          }),
+        }).catch(() => {});
       } catch (err) {
         console.error('Clipboard write error:', err);
       }

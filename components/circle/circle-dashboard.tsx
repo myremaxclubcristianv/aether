@@ -88,6 +88,16 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
           }));
 
           setSearchResults(mappedResults);
+
+          // Non-blocking search telemetry (result count only, no private query logging)
+          fetch('/api/analytics/event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'CIRCLE_SEARCH',
+              resultCount: mappedResults.length,
+            }),
+          }).catch(() => {});
         }
       } catch (err) {
         console.error('User search error:', err);

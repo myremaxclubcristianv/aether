@@ -146,6 +146,15 @@ export default function HomePage() {
             );
           }
         }
+        // Dispatch non-blocking HOME_VIEWED telemetry
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'HOME_VIEWED',
+            username: mappedProfile.username,
+          }),
+        }).catch(() => {});
       } catch (err) {
         console.error('Home data load error:', err);
       } finally {

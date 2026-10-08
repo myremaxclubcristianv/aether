@@ -62,6 +62,15 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId, username, isFirstP
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+      fetch('/api/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'PROOF_IMAGE_ADDED',
+          category,
+        }),
+      }).catch(() => {});
     }
   };
 
