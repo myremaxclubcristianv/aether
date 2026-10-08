@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, X, Users, Flame } from 'lucide-react';
-import { UserProfile, ProofWithProfile, DbProfile } from '@/types';
+import { UserProfile, ProofWithProfile, DbProfile, DbProof } from '@/types';
 import { Avatar } from '@/components/ui/avatar';
 import { ProofCard } from '@/components/proof/proof-card';
 import { followUser, unfollowUser } from '@/lib/circle';
@@ -20,7 +20,6 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
   initialSuggestions,
   currentUserId,
 }) => {
-  const supabase = createClient();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [feed, setFeed] = useState<ProofWithProfile[]>(initialFeed);
@@ -40,6 +39,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
   useEffect(() => {
     async function resolveFollowedState() {
       try {
+        const supabase = createClient();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: followsData } = (await (supabase.from('follows') as any)
           .select('following_id')
@@ -53,7 +53,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
       }
     }
     resolveFollowedState();
-  }, [currentUserId, supabase]);
+  }, [currentUserId]);
 
   // Live search effect with debounce and sanitized queries
   useEffect(() => {
@@ -68,6 +68,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
+        const supabase = createClient();
         const { data, error } = (await supabase
           .from('profiles')
           .select('*')
@@ -107,7 +108,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, currentUserId, supabase]);
+  }, [searchQuery, currentUserId]);
 
   const handleFollowToggle = async (targetUser: UserProfile) => {
     const targetId = targetUser.id;
@@ -150,14 +151,12 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
           }).catch(() => {});
 
           // Pull new items for this user to circle feed dynamically
+          const supabase = createClient();
           const { data: newProofs } = (await supabase
             .from('proofs')
-            .select('*, profiles(*)')
+            .select('*')
             .eq('user_id', targetId)
-            .order('created_at', { ascending: false })) as {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              data: any[] | null;
-            };
+            .order('created_at', { ascending: false })) as { data: DbProof[] | null };
 
           if (newProofs) {
             const mappedNew: ProofWithProfile[] = newProofs.map((p) => ({
@@ -168,15 +167,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
               caption: p.caption,
               points: p.points,
               createdAt: p.created_at,
-              profile: {
-                id: p.profiles.id,
-                username: p.profiles.username,
-                avatarUrl: p.profiles.avatar_url,
-                bio: p.profiles.bio,
-                flexScore: p.profiles.flex_score,
-                streak: p.profiles.streak,
-                createdAt: p.profiles.created_at,
-              },
+              profile: targetUser,
             }));
             setFeed((prev) => {
               const combined = [...mappedNew, ...prev];

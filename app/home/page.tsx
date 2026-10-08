@@ -21,7 +21,6 @@ const CATEGORIES = ['All', 'Fitness', 'Learning', 'Creating', 'Building', 'Lifes
 
 export default function HomePage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -31,11 +30,14 @@ export default function HomePage() {
   const [circleProofs, setCircleProofs] = useState<{ proof: ProofRecord; author: UserProfile }[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadData() {
       try {
+        const supabase = createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
-          router.push('/login');
+          if (isMounted) router.push('/login');
           return;
         }
 
@@ -46,7 +48,7 @@ export default function HomePage() {
           .maybeSingle()) as { data: DbProfile | null };
 
         if (!profile || !profile.username) {
-          router.push('/onboarding');
+          if (isMounted) router.push('/onboarding');
           return;
         }
 
@@ -59,7 +61,10 @@ export default function HomePage() {
           streak: profile.streak,
           createdAt: profile.created_at,
         };
-        setUserProfile(mappedProfile);
+
+        if (isMounted) {
+          setUserProfile(mappedProfile);
+        }
 
         // Fetch User's Proofs
         const { data: dbProofs } = (await supabase
@@ -68,7 +73,7 @@ export default function HomePage() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })) as { data: DbProof[] | null };
 
-        if (dbProofs) {
+        if (dbProofs && isMounted) {
           setProofs(dbProofs.map((p) => ({
             id: p.id,
             userId: p.user_id,
@@ -88,7 +93,7 @@ export default function HomePage() {
 
         const followingIds = (followsData || []).map((f) => f.following_id);
 
-        if (followingIds.length > 0) {
+        if (followingIds.length > 0 && isMounted) {
           const { data: circleProfiles } = (await supabase
             .from('profiles')
             .select('*')
@@ -96,7 +101,7 @@ export default function HomePage() {
             .order('flex_score', { ascending: false })
             .limit(4)) as { data: DbProfile[] | null };
 
-          if (circleProfiles) {
+          if (circleProfiles && isMounted) {
             setFollowedUsers(circleProfiles.map((p) => ({
               id: p.id,
               username: p.username,
@@ -116,7 +121,7 @@ export default function HomePage() {
             .order('created_at', { ascending: false })
             .limit(3)) as { data: DbProof[] | null };
 
-          if (latestProofs && latestProofs.length > 0) {
+          if (latestProofs && latestProofs.length > 0 && isMounted) {
             const authorIds = [...new Set(latestProofs.map((p) => p.user_id))];
             const { data: authorProfiles } = (await supabase
               .from('profiles')
@@ -164,17 +169,37 @@ export default function HomePage() {
       } catch (err) {
         console.error('Home data load error:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     loadData();
-  }, [router, supabase]);
 
-  if (loading || !userProfile) {
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
+
+  if (loading) {
     return (
       <div className="flex flex-col flex-1 justify-center items-center bg-black min-h-screen">
         <span className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center bg-black min-h-screen text-center px-6">
+        <p className="text-xs text-zinc-400">Loading session profile...</p>
+        <button
+          onClick={() => router.push('/onboarding')}
+          className="mt-4 px-4 py-1.5 rounded-full text-xs font-mono bg-white text-black hover:bg-zinc-200"
+        >
+          Complete Setup
+        </button>
       </div>
     );
   }

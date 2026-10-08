@@ -12,18 +12,20 @@ export const Navigation: React.FC = () => {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function getProfileUsername() {
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        if (user && isMounted) {
           const { data: profile } = (await supabase
             .from('profiles')
             .select('username')
             .eq('id', user.id)
-            .single()) as { data: { username: string } | null };
+            .maybeSingle()) as { data: { username: string } | null };
 
-          if (profile) {
+          if (profile && isMounted) {
             setUsername(profile.username);
           }
         }
@@ -32,6 +34,10 @@ export const Navigation: React.FC = () => {
       }
     }
     getProfileUsername();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleLogout = async () => {

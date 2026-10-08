@@ -21,18 +21,20 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
   useEffect(() => {
     if (initialUser) return;
+    let isMounted = true;
+
     async function loadUserProfile() {
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        if (user && isMounted) {
           const { data: profile } = (await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .maybeSingle()) as { data: UserProfile | null };
 
-          if (profile) {
+          if (profile && isMounted) {
             setUserProfile(profile);
           }
         }
@@ -41,6 +43,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
       }
     }
     loadUserProfile();
+
+    return () => {
+      isMounted = false;
+    };
   }, [initialUser]);
 
   const handleLogout = async () => {

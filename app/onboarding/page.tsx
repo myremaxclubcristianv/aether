@@ -10,7 +10,6 @@ import { DbProfile } from '@/types';
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [loading, setLoading] = useState(false);
@@ -27,21 +26,26 @@ export default function OnboardingPage() {
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadSession() {
       try {
+        const supabase = createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
-          router.push('/login');
+          if (isMounted) router.push('/login');
           return;
         }
 
-        setUserId(user.id);
+        if (isMounted) setUserId(user.id);
         
         const { data: profile } = (await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .maybeSingle()) as { data: DbProfile | null };
+
+        if (!isMounted) return;
 
         if (profile) {
           setUsername(profile.username || '');
@@ -60,14 +64,20 @@ export default function OnboardingPage() {
         }
       } catch (err) {
         console.error('Session load error:', err);
-        setError('Failed to load profile session.');
+        if (isMounted) setError('Failed to load profile session.');
       } finally {
-        setSessionLoading(false);
+        if (isMounted) {
+          setSessionLoading(false);
+        }
       }
     }
 
     loadSession();
-  }, [router, supabase]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -105,6 +115,7 @@ export default function OnboardingPage() {
     }
 
     try {
+      const supabase = createClient();
       let finalAvatarUrl = avatarUrl.trim() || null;
 
       // Upload avatar file to storage if user selected a file
