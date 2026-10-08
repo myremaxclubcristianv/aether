@@ -73,9 +73,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       </header>
 
       {/* =========================================================================
-          2. TODAY ACTION MODULE
+          2. TODAY ACTION MODULE (AETHER DAILY + DIRECT ACTIONS)
          ========================================================================= */}
-      <TodayModule userProfile={userProfile} todayProofs={todayProofs} />
+      <TodayModule
+        userProfile={userProfile}
+        todayProofs={todayProofs}
+        allProofs={initialProofs}
+      />
 
       {/* =========================================================================
           3. FLEX SCORE HERO MODULE

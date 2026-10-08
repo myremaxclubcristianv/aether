@@ -24,6 +24,11 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({ progress }) 
         </h1>
         <p className="text-xs sm:text-sm text-zinc-400 font-light max-w-lg mt-1">
           A real-world archive of what you have built, completed and proven over time.
+          {progress.dailyActionsCount > 0 && (
+            <span className="block text-zinc-300 font-mono text-[11px] mt-1.5">
+              &bull; {progress.dailyActionsCount} Aether Daily development actions completed.
+            </span>
+          )}
         </p>
       </section>
 

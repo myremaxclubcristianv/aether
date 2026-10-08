@@ -77,6 +77,7 @@ export interface UserProgressData {
   timeline: MonthlyTimelineBucket[];
   milestones: MilestoneItem[];
   categoryBreakdown: { name: string; count: number; points: number; percent: number }[];
+  dailyActionsCount: number;
 }
 
 const MONTH_NAMES = [
@@ -368,6 +369,10 @@ export function computeUserProgress(
     },
   ];
 
+  const dailyActionsCount = sortedProofs.filter((p) =>
+    (p.caption || '').includes('[DAILY:') || (p.caption || '').toLowerCase().includes('aether daily')
+  ).length;
+
   return {
     profile,
     totalProofs: totalProofsCount,
@@ -381,5 +386,6 @@ export function computeUserProgress(
     timeline,
     milestones,
     categoryBreakdown,
+    dailyActionsCount,
   };
 }
