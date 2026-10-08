@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
     const cleanMedium = typeof medium === 'string' ? medium.trim().slice(0, 50) : undefined;
     const cleanCampaign = typeof campaign === 'string' ? campaign.trim().slice(0, 50) : undefined;
 
-    // Non-blocking notification dispatch
-    notifyVisitor({
+    // Dispatch notification and await delivery before Lambda terminates
+    const sent = await notifyVisitor({
       page: page.slice(0, 150),
       source: cleanSource,
       medium: cleanMedium,
@@ -81,10 +81,11 @@ export async function POST(request: NextRequest) {
       city,
       region,
       user: cleanUser,
-    }).catch(() => {});
+    });
 
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: sent });
+  } catch (err) {
+    console.error('[AETHER TELEGRAM VISIT] Unexpected error:', err);
+    return NextResponse.json({ ok: false, error: 'Internal error' }, { status: 500 });
   }
 }

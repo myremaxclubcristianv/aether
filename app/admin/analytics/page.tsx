@@ -46,13 +46,13 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
   const userEmail = (user.email || '').toLowerCase();
 
   if (allowedEmails.length === 0 || !allowedEmails.includes(userEmail)) {
-    notifySecurityEvent({
+    await notifySecurityEvent({
       eventTitle: 'Unauthorized admin dashboard access attempt',
       endpoint: '/admin/analytics',
       authStatus: 'Forbidden (Non-admin User)',
       result: 'Rendered Access Restricted',
       user: user.email || 'unknown',
-    }).catch(() => {});
+    });
 
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">

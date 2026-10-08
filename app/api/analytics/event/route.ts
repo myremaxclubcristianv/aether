@@ -123,27 +123,29 @@ export async function POST(request: NextRequest) {
       page: cleanPage,
     };
 
+    let sent = false;
+
     if (type === 'SIGNUP' || type === 'ONBOARDING_COMPLETED') {
-      notifySignup({
+      sent = await notifySignup({
         ...basePayload,
         username: cleanUsername,
-      }).catch(() => {});
+      });
     } else if (type === 'LOGIN') {
-      notifyLogin({
+      sent = await notifyLogin({
         ...basePayload,
         username: cleanUsername,
-      }).catch(() => {});
+      });
     } else if (type === 'FIRST_PROOF_CREATED') {
-      notifyFirstProof({
+      sent = await notifyFirstProof({
         ...basePayload,
         username: cleanUsername,
         category: cleanCategory,
         caption: cleanCaption,
         points: cleanPoints,
         hasPhoto: Boolean(hasPhoto),
-      }).catch(() => {});
+      });
     } else if (type === 'PROOF_CREATED') {
-      notifyProofCreated({
+      sent = await notifyProofCreated({
         ...basePayload,
         username: cleanUsername,
         category: cleanCategory,
@@ -151,32 +153,33 @@ export async function POST(request: NextRequest) {
         points: cleanPoints,
         hasPhoto: Boolean(hasPhoto),
         streak: typeof streak === 'number' ? streak : undefined,
-      }).catch(() => {});
+      });
     } else if (type === 'FOLLOW' && cleanFollower && cleanFollowing) {
-      notifyFollow({
+      sent = await notifyFollow({
         ...basePayload,
         follower: cleanFollower,
         following: cleanFollowing,
-      }).catch(() => {});
+      });
     } else if (type === 'PROFILE_SHARED' && cleanUsername) {
-      notifyProfileShared({
+      sent = await notifyProfileShared({
         ...basePayload,
         username: cleanUsername,
         method: typeof method === 'string' ? method.slice(0, 30) : 'native_share',
-      }).catch(() => {});
+      });
     } else if (type === 'SECURITY_EVENT') {
-      notifySecurityEvent({
+      sent = await notifySecurityEvent({
         ...basePayload,
         eventTitle: typeof eventTitle === 'string' ? eventTitle.slice(0, 100) : 'Security Alert',
         endpoint: typeof endpoint === 'string' ? endpoint.slice(0, 100) : undefined,
         authStatus: typeof authStatus === 'string' ? authStatus.slice(0, 50) : undefined,
         result: typeof result === 'string' ? result.slice(0, 50) : undefined,
         details: typeof details === 'string' ? details.slice(0, 200) : undefined,
-      }).catch(() => {});
+      });
     }
 
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: sent });
+  } catch (err) {
+    console.error('[AETHER TELEGRAM EVENT] Unexpected error:', err);
+    return NextResponse.json({ ok: false, error: 'Internal error' }, { status: 500 });
   }
 }

@@ -29,21 +29,19 @@ export async function followUser(followerId: string, followingId: string) {
     return { success: false, error: error.message };
   }
 
-  // Non-blocking Telegram follow notification
-  (async () => {
-    try {
-      const { data: profiles } = (await supabase
-        .from('profiles')
-        .select('id, username')
-        .in('id', [actualFollowerId, followingId])) as { data: { id: string; username: string }[] | null };
+  // Dispatch Telegram follow notification
+  try {
+    const { data: profiles } = (await supabase
+      .from('profiles')
+      .select('id, username')
+      .in('id', [actualFollowerId, followingId])) as { data: { id: string; username: string }[] | null };
 
-      const follower = profiles?.find((p) => p.id === actualFollowerId)?.username || 'user';
-      const following = profiles?.find((p) => p.id === followingId)?.username || 'user';
-      await notifyFollow({ follower, following });
-    } catch {
-      // Non-critical side-effect
-    }
-  })();
+    const follower = profiles?.find((p) => p.id === actualFollowerId)?.username || 'user';
+    const following = profiles?.find((p) => p.id === followingId)?.username || 'user';
+    await notifyFollow({ follower, following });
+  } catch (err) {
+    console.error('[AETHER TELEGRAM FOLLOW] Notification dispatch error:', err);
+  }
 
   return { success: true, error: null };
 }

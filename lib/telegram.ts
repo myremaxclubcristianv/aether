@@ -194,10 +194,16 @@ export function resolveAttribution(data: {
  * Sends a message to the configured Telegram chat
  */
 export async function sendTelegramMessage(text: string): Promise<boolean> {
-  const token = TELEGRAM_BOT_TOKEN;
-  const chatId = TELEGRAM_CHAT_ID;
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim() || TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = process.env.TELEGRAM_CHAT_ID?.trim() || TELEGRAM_CHAT_ID?.trim();
 
-  if (!token || !chatId) {
+  if (!token) {
+    console.error('[AETHER TELEGRAM] Missing TELEGRAM_BOT_TOKEN in runtime environment.');
+    return false;
+  }
+
+  if (!chatId) {
+    console.error('[AETHER TELEGRAM] Missing TELEGRAM_CHAT_ID in runtime environment.');
     return false;
   }
 
@@ -216,14 +222,21 @@ export async function sendTelegramMessage(text: string): Promise<boolean> {
       }),
     });
 
-    if (!response.ok) {
-      console.error('Telegram API response error status:', response.status);
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || !data?.ok) {
+      console.error(
+        `[AETHER TELEGRAM] Telegram API error: ${response.status} — ${data?.description || 'Unknown error'}`
+      );
       return false;
     }
 
     return true;
   } catch (err) {
-    console.error('Failed to dispatch Telegram notification:', err instanceof Error ? err.message : 'Unknown error');
+    console.error(
+      '[AETHER TELEGRAM] Failed to dispatch Telegram notification:',
+      err instanceof Error ? err.message : 'Unknown error'
+    );
     return false;
   }
 }
@@ -245,7 +258,7 @@ export interface BaseTelemetryPayload {
 /**
  * Dispatches Level 2 — Visitor Intelligence Notification
  */
-export async function notifyVisitor(data: BaseTelemetryPayload): Promise<void> {
+export async function notifyVisitor(data: BaseTelemetryPayload): Promise<boolean> {
   const time = getFormattedTimestamp();
   const page = data.page || '/';
   const location = formatLocation(data.country, data.city, data.region);
@@ -292,13 +305,13 @@ export async function notifyVisitor(data: BaseTelemetryPayload): Promise<void> {
     '━━━━━━━━━━━━━━━━━━━━'
   );
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
  * Dispatches Level 1 — New Signup Notification
  */
-export async function notifySignup(data: BaseTelemetryPayload & { username?: string }): Promise<void> {
+export async function notifySignup(data: BaseTelemetryPayload & { username?: string }): Promise<boolean> {
   const time = getFormattedTimestamp();
   const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'New User';
   const location = formatLocation(data.country, data.city, data.region);
@@ -342,13 +355,13 @@ export async function notifySignup(data: BaseTelemetryPayload & { username?: str
     '━━━━━━━━━━━━━━━━━━━━'
   );
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
  * Dispatches Level 1 — User Login Notification
  */
-export async function notifyLogin(data: BaseTelemetryPayload & { username?: string }): Promise<void> {
+export async function notifyLogin(data: BaseTelemetryPayload & { username?: string }): Promise<boolean> {
   const time = getFormattedTimestamp();
   const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'Authenticated User';
   const location = formatLocation(data.country, data.city, data.region);
@@ -387,7 +400,7 @@ export async function notifyLogin(data: BaseTelemetryPayload & { username?: stri
 
   lines.push('━━━━━━━━━━━━━━━━━━━━');
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
@@ -400,7 +413,7 @@ export async function notifyProofCreated(data: BaseTelemetryPayload & {
   points: number;
   hasPhoto?: boolean;
   streak?: number;
-}): Promise<void> {
+}): Promise<boolean> {
   const time = getFormattedTimestamp();
   const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'User';
   const location = formatLocation(data.country, data.city, data.region);
@@ -440,7 +453,7 @@ export async function notifyProofCreated(data: BaseTelemetryPayload & {
     '━━━━━━━━━━━━━━━━━━━━'
   );
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
@@ -452,7 +465,7 @@ export async function notifyFirstProof(data: BaseTelemetryPayload & {
   caption?: string;
   points: number;
   hasPhoto?: boolean;
-}): Promise<void> {
+}): Promise<boolean> {
   const time = getFormattedTimestamp();
   const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'New User';
   const location = formatLocation(data.country, data.city, data.region);
@@ -497,7 +510,7 @@ export async function notifyFirstProof(data: BaseTelemetryPayload & {
 
   lines.push('━━━━━━━━━━━━━━━━━━━━');
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
@@ -506,7 +519,7 @@ export async function notifyFirstProof(data: BaseTelemetryPayload & {
 export async function notifyFollow(data: BaseTelemetryPayload & {
   follower: string;
   following: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const time = getFormattedTimestamp();
   const follower = data.follower.startsWith('@') ? data.follower : `@${data.follower}`;
   const following = data.following.startsWith('@') ? data.following : `@${data.following}`;
@@ -535,7 +548,7 @@ export async function notifyFollow(data: BaseTelemetryPayload & {
     '━━━━━━━━━━━━━━━━━━━━',
   ];
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
@@ -544,7 +557,7 @@ export async function notifyFollow(data: BaseTelemetryPayload & {
 export async function notifyProfileShared(data: BaseTelemetryPayload & {
   username: string;
   method: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const time = getFormattedTimestamp();
   const user = data.username.startsWith('@') ? data.username : `@${data.username}`;
   const methodDisplay = data.method === 'native_share' ? 'Native Share Dialog' : 'Clipboard Link Copied';
@@ -576,7 +589,7 @@ export async function notifyProfileShared(data: BaseTelemetryPayload & {
     '━━━━━━━━━━━━━━━━━━━━',
   ];
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
@@ -588,7 +601,7 @@ export async function notifySecurityEvent(data: BaseTelemetryPayload & {
   authStatus?: string;
   result?: string;
   details?: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const time = getFormattedTimestamp();
   const location = formatLocation(data.country, data.city, data.region);
   const device = data.device || 'Desktop · Browser';
@@ -630,6 +643,6 @@ export async function notifySecurityEvent(data: BaseTelemetryPayload & {
 
   lines.push('━━━━━━━━━━━━━━━━━━━━');
 
-  await sendTelegramMessage(lines.join('\n'));
+  return await sendTelegramMessage(lines.join('\n'));
 }
 
