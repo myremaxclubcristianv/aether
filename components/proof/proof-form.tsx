@@ -35,9 +35,11 @@ const CATEGORIES: CategoryOption[] = [
 
 interface ProofFormProps {
   userId: string;
+  username?: string;
+  isFirstProof?: boolean;
 }
 
-export const ProofForm: React.FC<ProofFormProps> = ({ userId }) => {
+export const ProofForm: React.FC<ProofFormProps> = ({ userId, username, isFirstProof = false }) => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isSubmittingRef = useRef(false);
@@ -49,7 +51,7 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successData, setSuccessData] = useState<{ points: number } | null>(null);
+  const [successData, setSuccessData] = useState<{ points: number; isFirst: boolean } | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,26 +106,31 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId }) => {
 
     try {
       const newProof = await createProof(userId, category, caption.trim(), imageFile);
+      const earnedPoints = newProof.points || (imageFile ? 15 : 10);
 
       // Dispatch Telegram proof notification (non-blocking)
       fetch('/api/analytics/event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'PROOF_CREATED',
+          type: isFirstProof ? 'FIRST_PROOF_CREATED' : 'PROOF_CREATED',
+          username,
           category,
           caption: caption.trim(),
-          points: newProof.points || (imageFile ? 15 : 10),
+          points: earnedPoints,
+          isFirstProof,
         }),
       }).catch(() => {});
 
       // Trigger Celebration State
-      setSuccessData({ points: newProof.points || (imageFile ? 15 : 10) });
+      setSuccessData({ points: earnedPoints, isFirst: isFirstProof });
 
-      setTimeout(() => {
-        router.push('/home');
-        router.refresh();
-      }, 1500);
+      if (!isFirstProof) {
+        setTimeout(() => {
+          router.push('/home');
+          router.refresh();
+        }, 1600);
+      }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Something went wrong saving your proof.';
       setError(errMsg);
@@ -135,24 +142,74 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId }) => {
   const pointsValue = imageFile ? 15 : 10;
 
   if (successData) {
+    const isFirst = successData.isFirst;
+    const profileHref = username ? `/${username}` : '/home';
+
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-6 text-center animate-in fade-in zoom-in duration-300">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-6">
-          <CheckCircle2 className="w-8 h-8" />
+      <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-in fade-in zoom-in duration-300 max-w-sm mx-auto">
+        <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white mb-6 shadow-xl">
+          <CheckCircle2 className="w-8 h-8 text-emerald-400" />
         </div>
-        <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-zinc-500 mb-2">
-          PROOF VERIFIED
+
+        <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-zinc-500 mb-2">
+          {isFirst ? 'YOUR FIRST PROOF' : 'PROOF CREATED'}
         </span>
+
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
-          +{successData.points} FLEX SCORE
+          {isFirst ? 'IS LIVE' : `+${successData.points} FLEX SCORE`}
         </h2>
-        <p className="text-xs text-zinc-400 font-light max-w-xs leading-relaxed mb-8">
-          Your proof has been recorded and added to your chronological activity feed.
+
+        {isFirst && (
+          <div className="font-mono text-xl font-semibold text-emerald-400 mb-2">
+            +{successData.points} FLEX SCORE
+          </div>
+        )}
+
+        <p className="text-xs text-zinc-400 font-light max-w-xs leading-relaxed mb-6">
+          {isFirst 
+            ? 'You have officially started. Your action is now part of your permanent record.'
+            : 'Your proof has been recorded and added to your chronological activity feed.'}
         </p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 font-mono text-xs text-orange-400">
+
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 font-mono text-xs text-orange-400 mb-8">
           <Flame className="w-4 h-4 fill-orange-400/20" />
-          <span>STREAK CONTINUES</span>
+          <span>{isFirst ? '1 DAY STREAK STARTED' : 'STREAK CONTINUES'}</span>
         </div>
+
+        {isFirst ? (
+          <div className="flex flex-col gap-3 w-full">
+            <button
+              onClick={() => {
+                router.push('/home');
+                router.refresh();
+              }}
+              className="w-full h-12 rounded-full bg-white text-black hover:bg-zinc-200 font-mono text-xs tracking-widest uppercase font-semibold transition-all shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>KEEP BUILDING • BACK TO HOME</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                router.push(profileHref);
+                router.refresh();
+              }}
+              className="w-full h-11 rounded-full bg-zinc-950 border border-zinc-850 hover:border-zinc-700 text-zinc-400 hover:text-white font-mono text-xs tracking-wider uppercase transition-colors"
+            >
+              View Profile
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              router.push('/home');
+              router.refresh();
+            }}
+            className="px-6 py-2.5 rounded-full bg-white text-black hover:bg-zinc-200 font-mono text-xs tracking-wider uppercase font-semibold transition-all"
+          >
+            Back to Home
+          </button>
+        )}
       </div>
     );
   }

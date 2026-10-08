@@ -303,15 +303,20 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-zinc-400 mb-3">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-medium text-white">Nothing here yet.</h3>
-              <p className="text-xs text-zinc-500 font-light mt-1 max-w-[240px] leading-relaxed">
-                Your first proof starts the story. Record your training, project, or learning milestone.
+              <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-500 uppercase mb-1">
+                {selectedCategory !== 'All' ? `${selectedCategory.toUpperCase()} PROOFS` : 'YOUR PROOF STARTS HERE'}
+              </span>
+              <h3 className="text-sm font-medium text-white">
+                {selectedCategory !== 'All' ? `No ${selectedCategory} proofs yet.` : 'Nothing is recorded yet.'}
+              </h3>
+              <p className="text-xs text-zinc-400 font-light mt-1 max-w-[240px] leading-relaxed">
+                {selectedCategory !== 'All' ? `Record your first ${selectedCategory.toLowerCase()} accomplishment.` : 'Do something worth remembering.'}
               </p>
               <Link
                 href="/proof"
-                className="mt-4 px-5 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 text-xs font-mono tracking-wider transition-all"
+                className="mt-4 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-mono tracking-wider font-semibold transition-all shadow-md"
               >
-                Create Your First Proof
+                CREATE PROOF
               </Link>
             </div>
           ) : (

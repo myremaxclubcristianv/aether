@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Flame, Trophy, ArrowLeft } from 'lucide-react';
+import { Flame, Trophy, ArrowLeft, Share2, Check } from 'lucide-react';
 import { UserProfile, ProofRecord } from '@/types';
 import { Avatar } from '@/components/ui/avatar';
 import { ProofCard } from '@/components/proof/proof-card';
@@ -36,8 +36,36 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isHoveringFollow, setIsHoveringFollow] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const isOwnProfile = viewerId === profile.id;
+
+  const handleShare = async () => {
+    const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/${profile.username}` : `https://aether-sable-delta.vercel.app/${profile.username}`;
+    
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `@${profile.username} on Aether`,
+          text: `Check out @${profile.username}'s verified achievements and Flex Score on Aether.`,
+          url: profileUrl,
+        });
+        return;
+      } catch {
+        // Fallback to clipboard
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(profileUrl);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      } catch (err) {
+        console.error('Clipboard write error:', err);
+      }
+    }
+  };
 
   const handleFollowToggle = async () => {
     if (!viewerId) return;
@@ -54,6 +82,18 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
         const res = await followUser(viewerId, profile.id);
         if (!res.success) {
           throw new Error(res.error || 'Failed to follow user.');
+        }
+        // Non-blocking telemetry
+        if (viewerProfile?.username) {
+          fetch('/api/analytics/event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'FOLLOW',
+              follower: viewerProfile.username,
+              following: profile.username,
+            }),
+          }).catch(() => {});
         }
       } else {
         const res = await unfollowUser(viewerId, profile.id);
@@ -85,7 +125,7 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
     <AppShell initialUser={viewerProfile || (isOwnProfile ? profile : null)}>
       <div className="flex flex-col gap-7 px-4 sm:px-6 py-6 sm:py-8">
         {/* Top Back Nav if viewing someone else */}
-        {!isOwnProfile && (
+        {!isOwnProfile ? (
           <Link
             href="/circle"
             className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 hover:text-white transition-colors w-fit -mt-2 mb-1"
@@ -93,6 +133,15 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>BACK TO CIRCLE</span>
           </Link>
+        ) : (
+          <div className="flex items-center justify-between -mt-2 mb-1">
+            <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
+              MY IDENTITY
+            </span>
+            <span className="text-[10px] font-mono text-zinc-600">
+              Built through proof.
+            </span>
+          </div>
         )}
 
         {/* =========================================================================
@@ -128,8 +177,8 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
             </span>
           </div>
 
-          {/* Action Button: Edit Profile or Follow/Unfollow */}
-          <div className="mt-2">
+          {/* Action Buttons: Edit Profile / Follow / Share */}
+          <div className="flex items-center gap-2 mt-2">
             {isOwnProfile ? (
               <Link
                 href="/onboarding"
@@ -162,7 +211,23 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
                 LOG IN TO FOLLOW
               </Link>
             )}
+
+            {/* Share Profile Action */}
+            <button
+              type="button"
+              onClick={handleShare}
+              title="Share profile"
+              className="p-2 rounded-full border border-zinc-850 bg-zinc-950/80 hover:bg-zinc-900 text-zinc-400 hover:text-white transition-colors"
+            >
+              {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+            </button>
           </div>
+
+          {copiedLink && (
+            <span className="text-[10px] font-mono text-emerald-400 animate-in fade-in duration-200">
+              Profile link copied to clipboard
+            </span>
+          )}
 
           {error && (
             <p className="text-xs font-mono text-red-400 mt-2">{error}</p>

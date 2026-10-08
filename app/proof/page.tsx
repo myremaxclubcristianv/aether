@@ -59,7 +59,11 @@ export default async function ProofPage() {
         </header>
 
         <main className="pt-2">
-          <ProofForm userId={user.id} />
+          <ProofForm 
+            userId={user.id} 
+            username={userProfile.username} 
+            isFirstProof={userProfile.flexScore === 0} 
+          />
         </main>
       </div>
     </AppShell>

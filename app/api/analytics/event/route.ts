@@ -3,6 +3,7 @@ import {
   notifySignup,
   notifyLogin,
   notifyProofCreated,
+  notifyFollow,
   parseUserAgent,
 } from '@/lib/telegram';
 
@@ -11,13 +12,13 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { type, email, username, category, caption, points } = body;
+    const { type, email, username, category, caption, points, follower, following, isFirstProof } = body;
 
     const uaHeader = request.headers.get('user-agent');
     const { device, browser, os } = parseUserAgent(uaHeader);
     const deviceString = `${os} · ${browser}${device !== 'Desktop' ? ` (${device})` : ''}`;
 
-    if (type === 'SIGNUP') {
+    if (type === 'SIGNUP' || type === 'ONBOARDING_COMPLETED') {
       notifySignup({
         username,
         email,
@@ -29,12 +30,17 @@ export async function POST(request: NextRequest) {
         email,
         device: deviceString,
       }).catch(() => {});
-    } else if (type === 'PROOF_CREATED') {
+    } else if (type === 'PROOF_CREATED' || type === 'FIRST_PROOF_CREATED') {
       notifyProofCreated({
         username,
         category: category || 'General',
-        caption,
+        caption: isFirstProof ? `[FIRST PROOF] ${caption || ''}` : caption,
         points: typeof points === 'number' ? points : 10,
+      }).catch(() => {});
+    } else if (type === 'FOLLOW' && follower && following) {
+      notifyFollow({
+        follower,
+        following,
       }).catch(() => {});
     }
 

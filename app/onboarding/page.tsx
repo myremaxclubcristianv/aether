@@ -24,6 +24,8 @@ export default function OnboardingPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [completed, setCompleted] = useState(false);
+
   useEffect(() => {
     async function loadSession() {
       try {
@@ -163,12 +165,10 @@ export default function OnboardingPage() {
       fetch('/api/analytics/event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'SIGNUP', username: cleanUsername }),
+        body: JSON.stringify({ type: 'ONBOARDING_COMPLETED', username: cleanUsername }),
       }).catch(() => {});
 
-      // Successful onboarding redirects to home profile page
-      router.push('/home');
-      router.refresh();
+      setCompleted(true);
     } catch (err) {
       console.error('Onboarding submit error:', err);
       const rawMsg = err instanceof Error ? err.message : 'An error occurred while updating profile.';
@@ -190,24 +190,86 @@ export default function OnboardingPage() {
     );
   }
 
+  if (completed) {
+    return (
+      <div className="flex flex-col flex-1 justify-center px-6 py-12 bg-black min-h-screen">
+        <div className="w-full max-w-sm mx-auto flex flex-col items-center text-center gap-6 animate-in fade-in zoom-in duration-300">
+          <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+            <span className="font-mono text-xl font-bold">@</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[10px] tracking-[0.35em] text-zinc-500 uppercase">
+              SETUP COMPLETE
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              Welcome to Aether
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
+              Show what you actually do. Actions speak louder than curated appearances.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 w-full mt-4">
+            <button
+              onClick={() => {
+                router.push('/proof');
+                router.refresh();
+              }}
+              className="w-full h-12 rounded-full bg-white text-black hover:bg-zinc-200 font-mono text-xs tracking-widest uppercase font-semibold transition-all shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>CREATE YOUR FIRST PROOF</span>
+            </button>
+
+            <button
+              onClick={() => {
+                router.push('/home');
+                router.refresh();
+              }}
+              className="w-full h-11 rounded-full bg-zinc-950 border border-zinc-850 hover:border-zinc-700 text-zinc-400 hover:text-white font-mono text-xs tracking-wider uppercase transition-colors"
+            >
+              Explore Aether
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col flex-1 justify-center px-6 py-12 bg-black min-h-screen">
-      <div className="w-full max-w-sm mx-auto flex flex-col gap-8">
+      <div className="w-full max-w-sm mx-auto flex flex-col gap-7">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center">
           <span className="font-mono text-[10px] tracking-[0.4em] text-zinc-500 uppercase select-none">
-            O N B O A R D I N G
+            A E T H E R
           </span>
-          <h2 className="text-xl font-medium tracking-tight text-white mt-3">
-            Configure Profile
+          <h2 className="text-xl font-medium tracking-tight text-white mt-2.5">
+            Configure Your Identity
           </h2>
-          <p className="text-xs text-zinc-500 font-light mt-1.5 leading-relaxed">
-            Customize how you will be recognized across the network.
+          <p className="text-xs text-zinc-400 font-light mt-1 max-w-xs leading-relaxed">
+            Aether is where what you actually do becomes visible.
           </p>
         </div>
 
+        {/* 3 Core Principles Card */}
+        <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-zinc-950/60 border border-zinc-900 text-left">
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">01 • DO</span>
+            <span className="text-[10px] text-zinc-300 font-medium leading-tight">Real Action</span>
+          </div>
+          <div className="flex flex-col gap-1 border-x border-zinc-900 px-2">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">02 • PROVE</span>
+            <span className="text-[10px] text-zinc-300 font-medium leading-tight">Verified Log</span>
+          </div>
+          <div className="flex flex-col gap-1 pl-1">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">03 • FLEX</span>
+            <span className="text-[10px] text-zinc-300 font-medium leading-tight">Earn Score</span>
+          </div>
+        </div>
+
         {/* Onboarding Form Card */}
-        <Card className="border-zinc-900 bg-zinc-950/20 p-6">
+        <Card className="border-zinc-900 bg-zinc-950/30 p-6 shadow-xl">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {error && (
               <div className="text-[11px] font-mono text-red-400 bg-red-950/20 border border-red-900/30 px-3 py-2 rounded-md">
@@ -216,7 +278,7 @@ export default function OnboardingPage() {
             )}
 
             {/* Avatar Preview & File Upload */}
-            <div className="flex flex-col items-center gap-2 pb-2">
+            <div className="flex flex-col items-center gap-2 pb-1">
               <div
                 onClick={() => fileInputRef.current?.click()}
                 className="cursor-pointer group relative rounded-full"
@@ -276,40 +338,22 @@ export default function OnboardingPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light font-mono lowercase"
-                placeholder="alexandre"
+                placeholder="username"
                 disabled={loading}
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="bio" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                Bio
+                Bio (Optional)
               </label>
               <textarea
                 id="bio"
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                rows={3}
-                className="p-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light resize-none leading-relaxed"
-                placeholder="Ultramarathoner. Building decentralized compute..."
-                disabled={loading}
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="avatarUrl" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                Avatar Image URL (Optional)
-              </label>
-              <input
-                id="avatarUrl"
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => {
-                  setAvatarUrl(e.target.value);
-                  if (!avatarFile) setAvatarPreview(e.target.value);
-                }}
-                className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light"
-                placeholder="https://example.com/avatar.jpg"
+                rows={2}
+                className="p-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-xs text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light resize-none leading-relaxed"
+                placeholder="Training, coding, writing, building..."
                 disabled={loading}
               />
             </div>
@@ -318,9 +362,9 @@ export default function OnboardingPage() {
               type="submit"
               variant="primary"
               isLoading={loading}
-              className="w-full mt-2 font-mono text-xs tracking-widest uppercase rounded-md h-10"
+              className="w-full mt-1 font-mono text-xs tracking-widest uppercase rounded-full h-11 bg-white text-black hover:bg-zinc-200 font-semibold"
             >
-              SAVE PROFILE
+              COMPLETE SETUP
             </Button>
           </form>
         </Card>

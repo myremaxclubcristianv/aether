@@ -128,6 +128,17 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
       } else {
         const res = await followUser(currentUserId, targetId);
         if (res.success) {
+          // Dispatch non-blocking follow telemetry
+          fetch('/api/analytics/event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'FOLLOW',
+              follower: currentUserId,
+              following: targetUser.username,
+            }),
+          }).catch(() => {});
+
           // Pull new items for this user to circle feed dynamically
           const { data: newProofs } = (await supabase
             .from('proofs')

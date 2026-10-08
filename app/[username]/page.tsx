@@ -17,9 +17,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     username = username.slice(1);
   }
 
+  const supabase = await createClient();
+  const { data: profile } = (await supabase
+    .from('profiles')
+    .select('username, bio, flex_score, streak')
+    .ilike('username', username)
+    .maybeSingle()) as { data: DbProfile | null };
+
+  const flexScore = profile?.flex_score ?? 0;
+  const streak = profile?.streak ?? 0;
+  const description = profile?.bio 
+    ? `${profile.bio} • ${flexScore} Flex Score • ${streak > 0 ? `${streak}d streak • ` : ''}Aether`
+    : `@${username} has earned ${flexScore} Flex Score on Aether. Track real achievements and verified proofs.`;
+
   return {
-    title: `@${username} | Aether`,
-    description: `View achievements, proofs and Flex Score on Aether.`,
+    title: `@${username} (${flexScore} Flex Score) • Aether`,
+    description,
+    openGraph: {
+      title: `@${username} • Aether`,
+      description,
+      type: 'profile',
+      url: `https://aether-sable-delta.vercel.app/${username}`,
+    },
+    twitter: {
+      card: 'summary',
+      title: `@${username} • Aether`,
+      description,
+    },
   };
 }
 
