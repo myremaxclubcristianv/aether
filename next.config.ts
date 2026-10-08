@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live;
+  script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.supabase.co https://mhutcducgquzcbrzvbwj.supabase.co;
+  img-src 'self' blob: data: https://mhutcducgquzcbrzvbwj.supabase.co;
   font-src 'self' data:;
-  connect-src 'self' https://*.supabase.co https://mhutcducgquzcbrzvbwj.supabase.co wss://*.supabase.co https://api.telegram.org https://vercel.live;
+  connect-src 'self' https://mhutcducgquzcbrzvbwj.supabase.co wss://mhutcducgquzcbrzvbwj.supabase.co;
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';
