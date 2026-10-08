@@ -10,10 +10,14 @@ export default function RootPage() {
 
   useEffect(() => {
     async function checkAuth() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        router.push('/home');
-      } else {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          router.push('/home');
+        } else {
+          router.push('/login');
+        }
+      } catch {
         router.push('/login');
       }
     }
