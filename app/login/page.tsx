@@ -44,9 +44,11 @@ export default function LoginPage() {
           .eq('id', data.user.id)
           .maybeSingle()) as { data: { username: string } | null };
 
-        if (profile?.username && !profile.username.startsWith('user_')) {
+        if (profile?.username) {
+          router.refresh();
           router.push('/home');
         } else {
+          router.refresh();
           router.push('/onboarding');
         }
       } else {
