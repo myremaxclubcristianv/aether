@@ -10,8 +10,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Aether • Achieve',
-  description: 'The premium network for what you actually achieve. Objective, minimal, high agency.',
+  metadataBase: new URL('https://aether-sable-delta.vercel.app'),
+  title: 'Aether — The Instagram for What You Actually Achieve',
+  description: "Your life isn't a feed. It's what you do. Track real progress, turn actions into Proofs, build your Flex Score, and see what your Circle is accomplishing.",
+  keywords: ['Aether', 'Proofs', 'Flex Score', 'Achievements', 'Social Network', 'Discipline', 'Productivity', 'Habits'],
+  authors: [{ name: 'Aether' }],
+  openGraph: {
+    title: 'Aether — The Instagram for What You Actually Achieve',
+    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
+    url: 'https://aether-sable-delta.vercel.app',
+    siteName: 'Aether',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Aether — The Instagram for What You Actually Achieve',
+    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
