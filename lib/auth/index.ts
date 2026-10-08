@@ -51,13 +51,13 @@ export async function getCurrentUser(): Promise<{ user: User | null; profile: Us
     return { user: null, profile: null };
   }
 
-  const { data: profile, error: profileError } = (await supabase
+  const { data: profile } = (await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()) as { data: DbProfile | null; error: unknown };
+    .maybeSingle()) as { data: DbProfile | null };
 
-  if (profileError || !profile) {
+  if (!profile) {
     return { user, profile: null };
   }
 

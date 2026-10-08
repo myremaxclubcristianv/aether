@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, signUp } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -32,7 +33,19 @@ export default function LoginPage() {
           body: JSON.stringify({ type: 'LOGIN', email, username: data?.user?.user_metadata?.username }),
         }).catch(() => {});
 
-        router.push('/home');
+        // Direct users to /onboarding if profile is incomplete, otherwise /home
+        const supabase = createClient();
+        const { data: profile } = (await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', data.user.id)
+          .maybeSingle()) as { data: { username: string } | null };
+
+        if (profile?.username && !profile.username.startsWith('user_')) {
+          router.push('/home');
+        } else {
+          router.push('/onboarding');
+        }
       } else {
         const data = await signUp(email, password);
 

@@ -28,14 +28,14 @@ export default function HomePage() {
           return;
         }
 
-        const { data: profile, error: profileError } = (await supabase
+        const { data: profile } = (await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single()) as { data: DbProfile | null; error: unknown };
+          .maybeSingle()) as { data: DbProfile | null };
 
-        if (profileError || !profile) {
-          // Profile exists in trigger but might not be fully finished, fallback or push to onboarding
+        if (!profile || !profile.username) {
+          // Profile not yet created/configured, push to onboarding
           router.push('/onboarding');
           return;
         }

@@ -62,7 +62,7 @@ export async function createProof(
   const { data: profile } = await (supabase.from('profiles') as any)
     .select('flex_score')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const currentScore = profile?.flex_score || 0;
   const newScore = currentScore + points;
