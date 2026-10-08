@@ -23,18 +23,46 @@ export default function LoginPage() {
 
     try {
       if (isLogin) {
-        await signIn(email, password);
-        // Successful login redirects to home
+        const data = await signIn(email, password);
+        
+        // Dispatch Telegram login notification (non-blocking)
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'LOGIN', email, username: data?.user?.user_metadata?.username }),
+        }).catch(() => {});
+
         router.push('/home');
       } else {
-        await signUp(email, password);
-        setSuccessMsg('Account created. Check email for confirmation or proceed.');
-        // After signup, redirect to onboarding
-        router.push('/onboarding');
+        const data = await signUp(email, password);
+
+        // Dispatch Telegram signup notification (non-blocking)
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'SIGNUP', email }),
+        }).catch(() => {});
+
+        if (data?.session) {
+          router.push('/onboarding');
+        } else if (data?.user?.identities && data.user.identities.length === 0) {
+          setError('An account with this email address already exists.');
+        } else {
+          setSuccessMsg('Account created. Please check your email for confirmation before logging in.');
+          setIsLogin(true);
+        }
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'An authentication error occurred.';
-      setError(errorMsg);
+      const rawMsg = err instanceof Error ? err.message : 'An authentication error occurred.';
+      if (rawMsg.includes('Failed to fetch') || rawMsg.includes('Load failed')) {
+        setError('Unable to connect to authentication service. Please check your network connection.');
+      } else if (rawMsg.toLowerCase().includes('invalid login credentials')) {
+        setError('Invalid email or password. Please verify your credentials.');
+      } else if (rawMsg.toLowerCase().includes('user already registered')) {
+        setError('An account with this email address already exists.');
+      } else {
+        setError(rawMsg);
+      }
     } finally {
       setLoading(false);
     }

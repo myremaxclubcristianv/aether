@@ -79,7 +79,20 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId }) => {
     }
 
     try {
-      await createProof(userId, category, caption, imageFile);
+      const newProof = await createProof(userId, category, caption, imageFile);
+
+      // Dispatch Telegram proof created notification (non-blocking)
+      fetch('/api/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'PROOF_CREATED',
+          category,
+          caption,
+          points: newProof.points,
+        }),
+      }).catch(() => {});
+
       router.push('/home');
       router.refresh();
     } catch (err) {

@@ -94,9 +94,14 @@ export default function OnboardingPage() {
       }
 
       // Successful onboarding redirects to home profile page
+      router.push('/home');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'An error occurred while updating profile.';
-      setError(errorMsg);
+      const rawMsg = err instanceof Error ? err.message : 'An error occurred while updating profile.';
+      if (rawMsg.includes('Failed to fetch') || rawMsg.includes('Load failed')) {
+        setError('Unable to reach database. Please check your network connection.');
+      } else {
+        setError(rawMsg);
+      }
     } finally {
       setLoading(false);
     }

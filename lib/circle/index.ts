@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { UserProfile, ProofWithProfile, DbProfile } from '@/types';
+import { notifyFollow } from '@/lib/telegram';
 
 /**
  * Follow another user. Checks checks are handled via DB RLS & constraints.
@@ -15,6 +16,23 @@ export async function followUser(followerId: string, followingId: string) {
   if (error) {
     return { success: false, error: error.message };
   }
+
+  // Non-blocking Telegram follow notification
+  (async () => {
+    try {
+      const { data: profiles } = (await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', [followerId, followingId])) as { data: { id: string; username: string }[] | null };
+
+      const follower = profiles?.find((p) => p.id === followerId)?.username || 'user';
+      const following = profiles?.find((p) => p.id === followingId)?.username || 'user';
+      await notifyFollow({ follower, following });
+    } catch {
+      // Non-critical side-effect
+    }
+  })();
+
   return { success: true, error: null };
 }
 
