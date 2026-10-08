@@ -37,9 +37,11 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
 
   // Live search effect
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const cleanQuery = searchQuery.trim().replace(/^@+/, '');
+    if (!cleanQuery) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
 
@@ -49,9 +51,10 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
         const { data, error } = (await supabase
           .from('profiles')
           .select('*')
-          .ilike('username', `%${searchQuery.trim()}%`)
+          .ilike('username', `%${cleanQuery}%`)
           .neq('id', currentUserId)
-          .limit(5)) as { data: DbProfile[] | null; error: unknown };
+          .order('flex_score', { ascending: false })
+          .limit(20)) as { data: DbProfile[] | null; error: unknown };
 
         if (!error && data) {
           const mappedResults: UserProfile[] = data.map((p) => ({
@@ -64,20 +67,22 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
             createdAt: p.created_at,
           }));
           
-          const { data: followsData } = (await supabase
-            .from('follows')
-            .select('following_id')
-            .eq('follower_id', currentUserId)
-            .in('following_id', mappedResults.map((r) => r.id))) as { data: { following_id: string }[] | null; error: unknown };
+          if (mappedResults.length > 0) {
+            const { data: followsData } = (await supabase
+              .from('follows')
+              .select('following_id')
+              .eq('follower_id', currentUserId)
+              .in('following_id', mappedResults.map((r) => r.id))) as { data: { following_id: string }[] | null; error: unknown };
 
-          const curFollowed = new Set((followsData || []).map((f) => f.following_id));
-          
-          // Update followed IDs set
-          setFollowedIds((prev) => {
-            const next = new Set(prev);
-            curFollowed.forEach((id) => next.add(id));
-            return next;
-          });
+            const curFollowed = new Set((followsData || []).map((f) => f.following_id));
+            
+            // Update followed IDs set
+            setFollowedIds((prev) => {
+              const next = new Set(prev);
+              curFollowed.forEach((id) => next.add(id));
+              return next;
+            });
+          }
 
           setSearchResults(mappedResults);
         }
@@ -86,7 +91,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
       } finally {
         setIsSearching(false);
       }
-    }, 300);
+    }, 250);
 
     return () => clearTimeout(timer);
   }, [searchQuery, currentUserId, supabase]);
@@ -236,7 +241,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
                 const isFollowed = followedIds.has(user.id);
                 return (
                   <div key={user.id} className="flex items-center justify-between py-1">
-                    <Link href={`/@${user.username}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <Link href={`/${user.username}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                       <Avatar src={user.avatarUrl || undefined} fallback={user.username} size="sm" />
                       <div className="flex flex-col text-left">
                         <span className="text-xs font-medium text-white">@{user.username}</span>
@@ -312,7 +317,7 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
               const isFollowed = followedIds.has(user.id);
               return (
                 <div key={user.id} className="flex items-center justify-between py-1">
-                  <Link href={`/@${user.username}`} className="flex items-center gap-3 hover:opacity-85 transition-opacity">
+                  <Link href={`/${user.username}`} className="flex items-center gap-3 hover:opacity-85 transition-opacity">
                     <Avatar src={user.avatarUrl || undefined} fallback={user.username} size="sm" />
                     <div className="flex flex-col text-left">
                       <span className="text-xs font-medium text-white">@{user.username}</span>

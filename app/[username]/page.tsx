@@ -33,11 +33,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
   const supabase = await createClient();
 
-  // Query user profile by username match
+  // Query user profile by username match (case-insensitive)
   const { data: profileData, error: profileError } = (await supabase
     .from('profiles')
     .select('*')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .maybeSingle()) as { data: DbProfile | null; error: unknown };
 
   if (profileError || !profileData) {

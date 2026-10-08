@@ -9,9 +9,12 @@ import { notifyFollow } from '@/lib/telegram';
  */
 export async function followUser(followerId: string, followingId: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const actualFollowerId = user?.id || followerId;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('follows') as any)
-    .insert({ follower_id: followerId, following_id: followingId });
+    .insert({ follower_id: actualFollowerId, following_id: followingId });
 
   if (error) {
     return { success: false, error: error.message };
@@ -23,9 +26,9 @@ export async function followUser(followerId: string, followingId: string) {
       const { data: profiles } = (await supabase
         .from('profiles')
         .select('id, username')
-        .in('id', [followerId, followingId])) as { data: { id: string; username: string }[] | null };
+        .in('id', [actualFollowerId, followingId])) as { data: { id: string; username: string }[] | null };
 
-      const follower = profiles?.find((p) => p.id === followerId)?.username || 'user';
+      const follower = profiles?.find((p) => p.id === actualFollowerId)?.username || 'user';
       const following = profiles?.find((p) => p.id === followingId)?.username || 'user';
       await notifyFollow({ follower, following });
     } catch {
@@ -41,10 +44,13 @@ export async function followUser(followerId: string, followingId: string) {
  */
 export async function unfollowUser(followerId: string, followingId: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const actualFollowerId = user?.id || followerId;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('follows') as any)
     .delete()
-    .eq('follower_id', followerId)
+    .eq('follower_id', actualFollowerId)
     .eq('following_id', followingId);
 
   if (error) {
@@ -217,3 +223,39 @@ export async function getSuggestedUsers(userId: string): Promise<UserProfile[]> 
     createdAt: p.created_at,
   }));
 }
+
+/**
+ * Search users by username (case-insensitive, trimmed, @ stripped, excluding current user).
+ */
+export async function searchUsers(query: string, currentUserId?: string, limit = 20): Promise<UserProfile[]> {
+  const supabase = await createClient();
+  const cleanQuery = query.trim().replace(/^@+/, '');
+
+  if (!cleanQuery) return [];
+
+  let dbQuery = supabase
+    .from('profiles')
+    .select('*')
+    .ilike('username', `%${cleanQuery}%`)
+    .order('flex_score', { ascending: false })
+    .limit(limit);
+
+  if (currentUserId) {
+    dbQuery = dbQuery.neq('id', currentUserId);
+  }
+
+  const { data, error } = (await dbQuery) as { data: DbProfile[] | null; error: unknown };
+
+  if (error || !data) return [];
+
+  return data.map((p) => ({
+    id: p.id,
+    username: p.username,
+    avatarUrl: p.avatar_url,
+    bio: p.bio,
+    flexScore: p.flex_score,
+    streak: p.streak,
+    createdAt: p.created_at,
+  }));
+}
+
