@@ -14,15 +14,20 @@ export const metadata: Metadata = {
 
 export default async function RootPage() {
   // 1. Authenticated User Redirection
+  let shouldRedirectToHome = false;
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-      redirect('/home');
+      shouldRedirectToHome = true;
     }
   } catch {
     // If Supabase is unavailable, continue rendering the public landing experience
+  }
+
+  if (shouldRedirectToHome) {
+    redirect('/home');
   }
 
   return (

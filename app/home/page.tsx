@@ -108,22 +108,27 @@ export default function HomePage() {
             })));
           }
 
-          // Fetch Latest Circle Proofs
-          const { data: latestCircleProofs } = (await supabase
+          // Fetch Latest Circle Proofs safely
+          const { data: latestProofs } = (await supabase
             .from('proofs')
-            .select('*, profiles(*)')
+            .select('*')
             .in('user_id', followingIds)
             .order('created_at', { ascending: false })
-            .limit(3)) as {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              data: any[] | null;
-            };
+            .limit(3)) as { data: DbProof[] | null };
 
-          if (latestCircleProofs) {
+          if (latestProofs && latestProofs.length > 0) {
+            const authorIds = [...new Set(latestProofs.map((p) => p.user_id))];
+            const { data: authorProfiles } = (await supabase
+              .from('profiles')
+              .select('*')
+              .in('id', authorIds)) as { data: DbProfile[] | null };
+
+            const profMap = new Map((authorProfiles || []).map((pr) => [pr.id, pr]));
+
             setCircleProofs(
-              latestCircleProofs
-                .filter((p) => p.profiles)
-                .map((p) => ({
+              latestProofs.map((p) => {
+                const author = profMap.get(p.user_id);
+                return {
                   proof: {
                     id: p.id,
                     userId: p.user_id,
@@ -134,15 +139,16 @@ export default function HomePage() {
                     createdAt: p.created_at,
                   },
                   author: {
-                    id: p.profiles.id,
-                    username: p.profiles.username,
-                    avatarUrl: p.profiles.avatar_url,
-                    bio: p.profiles.bio,
-                    flexScore: p.profiles.flex_score,
-                    streak: p.profiles.streak,
-                    createdAt: p.profiles.created_at,
+                    id: author?.id || p.user_id,
+                    username: author?.username || 'user',
+                    avatarUrl: author?.avatar_url || null,
+                    bio: author?.bio || null,
+                    flexScore: author?.flex_score ?? 0,
+                    streak: author?.streak ?? 0,
+                    createdAt: author?.created_at || p.created_at,
                   },
-                }))
+                };
+              })
             );
           }
         }
@@ -165,15 +171,13 @@ export default function HomePage() {
     loadData();
   }, [router, supabase]);
 
-  if (loading) {
+  if (loading || !userProfile) {
     return (
       <div className="flex flex-col flex-1 justify-center items-center bg-black min-h-screen">
         <span className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
       </div>
     );
   }
-
-  if (!userProfile) return null;
 
   const filteredProofs = proofs.filter((p) => {
     if (selectedCategory === 'All') return true;

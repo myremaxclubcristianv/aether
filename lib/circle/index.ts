@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { UserProfile, ProofWithProfile, DbProfile } from '@/types';
+import { UserProfile, ProofWithProfile, DbProfile, DbProof } from '@/types';
 import { notifyFollow } from '@/lib/telegram';
 
 /**
@@ -154,17 +154,24 @@ export async function getCircleFeed(userId: string, limit = 50): Promise<ProofWi
 
   const { data: proofsData, error: proofsError } = (await supabase
     .from('proofs')
-    .select('*, profiles(*)')
+    .select('*')
     .in('user_id', followingIds)
     .order('created_at', { ascending: false })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .limit(limit)) as { data: any[] | null; error: unknown };
+    .limit(limit)) as { data: DbProof[] | null; error: unknown };
 
-  if (proofsError || !proofsData) return [];
+  if (proofsError || !proofsData || proofsData.length === 0) return [];
 
-  return proofsData
-    .filter((p) => p.profiles)
-    .map((p) => ({
+  const authorIds = [...new Set(proofsData.map((p) => p.user_id))];
+  const { data: profilesData } = (await supabase
+    .from('profiles')
+    .select('*')
+    .in('id', authorIds)) as { data: DbProfile[] | null };
+
+  const profMap = new Map((profilesData || []).map((pr) => [pr.id, pr]));
+
+  return proofsData.map((p) => {
+    const prof = profMap.get(p.user_id);
+    return {
       id: p.id,
       userId: p.user_id,
       imageUrl: p.image_url,
@@ -173,15 +180,16 @@ export async function getCircleFeed(userId: string, limit = 50): Promise<ProofWi
       points: p.points,
       createdAt: p.created_at,
       profile: {
-        id: p.profiles.id,
-        username: p.profiles.username,
-        avatarUrl: p.profiles.avatar_url,
-        bio: p.profiles.bio,
-        flexScore: p.profiles.flex_score,
-        streak: p.profiles.streak,
-        createdAt: p.profiles.created_at,
+        id: prof?.id || p.user_id,
+        username: prof?.username || 'user',
+        avatarUrl: prof?.avatar_url || null,
+        bio: prof?.bio || null,
+        flexScore: prof?.flex_score ?? 0,
+        streak: prof?.streak ?? 0,
+        createdAt: prof?.created_at || p.created_at,
       },
-    }));
+    };
+  });
 }
 
 /**

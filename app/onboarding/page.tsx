@@ -337,7 +337,7 @@ export default function OnboardingPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light font-mono lowercase"
+                className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-600 font-light font-mono lowercase"
                 placeholder="username"
                 disabled={loading}
               />
@@ -352,7 +352,7 @@ export default function OnboardingPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows={2}
-                className="p-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-xs text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-650 font-light resize-none leading-relaxed"
+                className="p-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-xs text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-600 font-light resize-none leading-relaxed"
                 placeholder="Training, coding, writing, building..."
                 disabled={loading}
               />
