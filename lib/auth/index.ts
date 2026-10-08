@@ -6,11 +6,17 @@ import { User } from '@supabase/supabase-js';
 /**
  * Sign up a new user using email & password
  */
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, password: string, username?: string) {
   const supabase = createClient();
+  const cleanUsername = username?.trim() || `user_${Math.random().toString(36).substring(2, 10)}`;
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        username: cleanUsername,
+      },
+    },
   });
   
   if (error) throw error;

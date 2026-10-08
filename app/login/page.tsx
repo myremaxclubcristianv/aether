@@ -15,9 +15,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const isSubmittingRef = React.useRef(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || loading) return;
+    isSubmittingRef.current = true;
     setLoading(true);
     setError(null);
     setSuccessMsg(null);
@@ -73,10 +76,13 @@ export default function LoginPage() {
         setError('Invalid email or password. Please verify your credentials.');
       } else if (rawMsg.toLowerCase().includes('user already registered')) {
         setError('An account with this email address already exists.');
+      } else if (rawMsg.toLowerCase().includes('rate limit') || rawMsg.toLowerCase().includes('over_email_send_rate_limit')) {
+        setError('Email rate limit reached for the Supabase default mailer. Please try again in a few minutes or disable email confirmation in Supabase.');
       } else {
         setError(rawMsg);
       }
     } finally {
+      isSubmittingRef.current = false;
       setLoading(false);
     }
   };
