@@ -63,8 +63,20 @@ export default function LoginPage() {
           router.push('/onboarding');
         } else if (data?.user?.identities && data.user.identities.length === 0) {
           setError('An account with this email address already exists.');
+        } else if (data?.user) {
+          // Attempt automatic login to acquire session immediately
+          try {
+            const loginData = await signIn(email, password);
+            if (loginData?.session) {
+              router.push('/onboarding');
+              return;
+            }
+          } catch {
+            // Fallback if session requires manual login
+          }
+          router.push('/onboarding');
         } else {
-          setSuccessMsg('Account created. Please check your email for confirmation before logging in.');
+          setSuccessMsg('Account created successfully. Logging in...');
           setIsLogin(true);
         }
       }
