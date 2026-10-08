@@ -3,7 +3,10 @@ import {
   notifySignup,
   notifyLogin,
   notifyProofCreated,
+  notifyFirstProof,
   notifyFollow,
+  notifyProfileShared,
+  notifySecurityEvent,
   parseUserAgent,
 } from '@/lib/telegram';
 
@@ -20,6 +23,7 @@ const ALLOWED_EVENT_TYPES = new Set([
   'PROFILE_SHARED',
   'CIRCLE_SEARCH',
   'PROOF_IMAGE_ADDED',
+  'SECURITY_EVENT',
 ]);
 
 // In-memory sliding rate limiter: max 30 events per IP per minute
@@ -57,47 +61,117 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { type, email, username, category, caption, points, follower, following, isFirstProof } = body;
+    const {
+      type,
+      username,
+      category,
+      caption,
+      points,
+      hasPhoto,
+      streak,
+      follower,
+      following,
+      method,
+      page,
+      source,
+      medium,
+      campaign,
+      referrer,
+      eventTitle,
+      endpoint,
+      authStatus,
+      result,
+      details,
+    } = body;
 
     if (!type || typeof type !== 'string' || !ALLOWED_EVENT_TYPES.has(type)) {
       return NextResponse.json({ ok: true });
     }
 
-    const uaHeader = request.headers.get('user-agent');
-    const { device, browser, os } = parseUserAgent(uaHeader);
-    const deviceString = `${os} · ${browser}${device !== 'Desktop' ? ` (${device})` : ''}`;
+    const headers = request.headers;
+    const uaHeader = headers.get('user-agent');
+    const { full: deviceString } = parseUserAgent(uaHeader);
+    const country =
+      headers.get('x-vercel-ip-country') ||
+      headers.get('cf-ipcountry') ||
+      headers.get('x-country') ||
+      '—';
+    const city = headers.get('x-vercel-ip-city') || undefined;
+    const region = headers.get('x-vercel-ip-country-region') || undefined;
 
     const cleanUsername = typeof username === 'string' ? username.trim().slice(0, 50) : undefined;
-    const cleanEmail = typeof email === 'string' ? email.trim().slice(0, 100) : undefined;
     const cleanCategory = typeof category === 'string' ? category.trim().slice(0, 32) : 'General';
     const cleanCaption = typeof caption === 'string' ? caption.trim().slice(0, 500) : undefined;
     const cleanPoints = typeof points === 'number' && points >= 0 && points <= 100 ? points : 10;
     const cleanFollower = typeof follower === 'string' ? follower.trim().slice(0, 50) : undefined;
     const cleanFollowing = typeof following === 'string' ? following.trim().slice(0, 50) : undefined;
+    const cleanSource = typeof source === 'string' ? source.trim().slice(0, 50) : undefined;
+    const cleanMedium = typeof medium === 'string' ? medium.trim().slice(0, 50) : undefined;
+    const cleanCampaign = typeof campaign === 'string' ? campaign.trim().slice(0, 50) : undefined;
+    const cleanReferrer = typeof referrer === 'string' ? referrer.trim().slice(0, 200) : undefined;
+    const cleanPage = typeof page === 'string' ? page.trim().slice(0, 150) : undefined;
+
+    const basePayload = {
+      device: deviceString,
+      country: country.slice(0, 10),
+      city,
+      region,
+      source: cleanSource,
+      medium: cleanMedium,
+      campaign: cleanCampaign,
+      referrer: cleanReferrer,
+      page: cleanPage,
+    };
 
     if (type === 'SIGNUP' || type === 'ONBOARDING_COMPLETED') {
       notifySignup({
+        ...basePayload,
         username: cleanUsername,
-        email: cleanEmail,
-        device: deviceString,
       }).catch(() => {});
     } else if (type === 'LOGIN') {
       notifyLogin({
+        ...basePayload,
         username: cleanUsername,
-        email: cleanEmail,
-        device: deviceString,
       }).catch(() => {});
-    } else if (type === 'PROOF_CREATED' || type === 'FIRST_PROOF_CREATED') {
-      notifyProofCreated({
+    } else if (type === 'FIRST_PROOF_CREATED') {
+      notifyFirstProof({
+        ...basePayload,
         username: cleanUsername,
         category: cleanCategory,
-        caption: isFirstProof ? `[FIRST PROOF] ${cleanCaption || ''}` : cleanCaption,
+        caption: cleanCaption,
         points: cleanPoints,
+        hasPhoto: Boolean(hasPhoto),
+      }).catch(() => {});
+    } else if (type === 'PROOF_CREATED') {
+      notifyProofCreated({
+        ...basePayload,
+        username: cleanUsername,
+        category: cleanCategory,
+        caption: cleanCaption,
+        points: cleanPoints,
+        hasPhoto: Boolean(hasPhoto),
+        streak: typeof streak === 'number' ? streak : undefined,
       }).catch(() => {});
     } else if (type === 'FOLLOW' && cleanFollower && cleanFollowing) {
       notifyFollow({
+        ...basePayload,
         follower: cleanFollower,
         following: cleanFollowing,
+      }).catch(() => {});
+    } else if (type === 'PROFILE_SHARED' && cleanUsername) {
+      notifyProfileShared({
+        ...basePayload,
+        username: cleanUsername,
+        method: typeof method === 'string' ? method.slice(0, 30) : 'native_share',
+      }).catch(() => {});
+    } else if (type === 'SECURITY_EVENT') {
+      notifySecurityEvent({
+        ...basePayload,
+        eventTitle: typeof eventTitle === 'string' ? eventTitle.slice(0, 100) : 'Security Alert',
+        endpoint: typeof endpoint === 'string' ? endpoint.slice(0, 100) : undefined,
+        authStatus: typeof authStatus === 'string' ? authStatus.slice(0, 50) : undefined,
+        result: typeof result === 'string' ? result.slice(0, 50) : undefined,
+        details: typeof details === 'string' ? details.slice(0, 200) : undefined,
       }).catch(() => {});
     }
 

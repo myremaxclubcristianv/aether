@@ -1,57 +1,112 @@
 /**
- * Server-side Telegram Notification Service for Aether
- * Safe, non-blocking, and never exposes tokens or credentials to the client.
+ * Server-side Telegram Intelligence & Activity Monitoring Service for Aether
+ * Safe, non-blocking, and never exposes tokens, credentials, or sensitive data.
  */
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 /**
- * Formats time string in Europe/Bucharest timezone
+ * Country code to Flag emoji helper
  */
-export function getFormattedTime(): string {
+export function getCountryFlag(countryCode?: string): string {
+  if (!countryCode || countryCode.length !== 2 || countryCode === '—') return '🌍';
   try {
-    return new Intl.DateTimeFormat('ro-RO', {
+    const codePoints = countryCode
+      .toUpperCase()
+      .split('')
+      .map((char) => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  } catch {
+    return '🌍';
+  }
+}
+
+/**
+ * Country code to localized Name helper
+ */
+export function getCountryName(countryCode?: string): string {
+  if (!countryCode || countryCode === '—' || countryCode.length !== 2) return '';
+  try {
+    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    return regionNames.of(countryCode.toUpperCase()) || countryCode.toUpperCase();
+  } catch {
+    return countryCode.toUpperCase();
+  }
+}
+
+/**
+ * Formats full location string (Flag + Country + City/Region)
+ */
+export function formatLocation(country?: string, city?: string, region?: string): string {
+  if (!country || country === '—') return '—';
+  const flag = getCountryFlag(country);
+  const countryName = getCountryName(country);
+  const cleanCity = city && city !== '—' ? decodeURIComponent(city).trim() : '';
+  const cleanRegion = region && region !== '—' && region !== city ? decodeURIComponent(region).trim() : '';
+
+  const locationParts = [countryName];
+  if (cleanCity) locationParts.push(cleanCity);
+  else if (cleanRegion) locationParts.push(cleanRegion);
+
+  return `${flag} ${locationParts.filter(Boolean).join(' • ')}`;
+}
+
+/**
+ * Formats full timestamp in Europe/Bucharest timezone
+ */
+export function getFormattedTimestamp(): { dateStr: string; timeStr: string; full: string } {
+  try {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Bucharest',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      timeZone: 'Europe/Bucharest',
       hour12: false,
-    }).format(new Date());
+    });
+    const parts = formatter.formatToParts(now);
+    const day = parts.find((p) => p.type === 'day')?.value || '';
+    const month = parts.find((p) => p.type === 'month')?.value || '';
+    const year = parts.find((p) => p.type === 'year')?.value || '';
+    const hour = parts.find((p) => p.type === 'hour')?.value || '';
+    const minute = parts.find((p) => p.type === 'minute')?.value || '';
+    const second = parts.find((p) => p.type === 'second')?.value || '';
+
+    const dateStr = `${day} ${month} ${year}`;
+    const timeStr = `${hour}:${minute}:${second}`;
+    return {
+      dateStr,
+      timeStr,
+      full: `${dateStr} • ${timeStr}\nEurope/Bucharest`,
+    };
   } catch {
-    return new Date().toISOString().substring(11, 19);
+    const iso = new Date().toISOString();
+    return {
+      dateStr: iso.slice(0, 10),
+      timeStr: iso.slice(11, 19),
+      full: `${iso.slice(0, 10)} • ${iso.slice(11, 19)}\nUTC`,
+    };
   }
 }
 
 /**
- * Masks an email for privacy (e.g. c***n@domain.com)
+ * Parses user-agent header into clean device, browser, OS strings
  */
-export function maskEmail(email?: string): string {
-  if (!email || !email.includes('@')) return '—';
-  const [local, domain] = email.split('@');
-  if (local.length <= 2) {
-    return `${local[0]}*@${domain}`;
-  }
-  const start = local[0];
-  const end = local[local.length - 1];
-  const maskedMiddle = '*'.repeat(Math.min(local.length - 2, 4));
-  return `${start}${maskedMiddle}${end}@${domain}`;
-}
-
-/**
- * Parses user-agent header into clean device and browser strings
- */
-export function parseUserAgent(ua?: string | null): { device: string; browser: string; os: string } {
-  if (!ua) return { device: 'Unknown', browser: 'Unknown', os: 'Unknown' };
+export function parseUserAgent(ua?: string | null): { device: string; browser: string; os: string; full: string } {
+  if (!ua) return { device: 'Unknown', browser: 'Unknown', os: 'Unknown', full: 'Desktop · Browser' };
 
   let os = 'Unknown OS';
-  if (/macintosh|mac os x/i.test(ua)) os = 'Mac';
+  if (/macintosh|mac os x/i.test(ua)) os = 'macOS';
   else if (/windows/i.test(ua)) os = 'Windows';
   else if (/android/i.test(ua)) os = 'Android';
   else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
   else if (/linux/i.test(ua)) os = 'Linux';
 
-  let browser = 'Unknown';
+  let browser = 'Browser';
   if (/edg/i.test(ua)) browser = 'Edge';
   else if (/chrome|crios/i.test(ua) && !/opr|opera/i.test(ua)) browser = 'Chrome';
   else if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) browser = 'Safari';
@@ -62,7 +117,77 @@ export function parseUserAgent(ua?: string | null): { device: string; browser: s
   if (/mobile/i.test(ua)) device = 'Mobile';
   else if (/tablet|ipad/i.test(ua)) device = 'Tablet';
 
-  return { device, browser, os };
+  const full = `${device} • ${os} • ${browser}`;
+  return { device, browser, os, full };
+}
+
+/**
+ * Categorizes and resolves acquisition source & campaign attribution
+ */
+export function resolveAttribution(data: {
+  source?: string;
+  medium?: string;
+  campaign?: string;
+  referrer?: string;
+}): { source: string; medium: string; campaign: string; referrer: string; isAttributed: boolean } {
+  const cleanReferrer = data.referrer && data.referrer !== '—' ? data.referrer.trim() : '—';
+  let source = data.source?.trim() || '';
+  let medium = data.medium?.trim() || '';
+  const campaign = data.campaign?.trim() || '';
+
+  // Deterministic source identification from referrer if utm_source is absent
+  if (!source && cleanReferrer !== '—') {
+    const refLower = cleanReferrer.toLowerCase();
+    if (refLower.includes('instagram.com') || refLower.includes('l.instagram.com')) {
+      source = 'Instagram';
+      medium = medium || 'Social';
+    } else if (refLower.includes('t.co') || refLower.includes('twitter.com') || refLower.includes('x.com')) {
+      source = 'X (Twitter)';
+      medium = medium || 'Social';
+    } else if (refLower.includes('facebook.com') || refLower.includes('fb.me')) {
+      source = 'Facebook';
+      medium = medium || 'Social';
+    } else if (refLower.includes('linkedin.com') || refLower.includes('lnkd.in')) {
+      source = 'LinkedIn';
+      medium = medium || 'Social';
+    } else if (refLower.includes('tiktok.com')) {
+      source = 'TikTok';
+      medium = medium || 'Social';
+    } else if (refLower.includes('youtube.com') || refLower.includes('youtu.be')) {
+      source = 'YouTube';
+      medium = medium || 'Social';
+    } else if (refLower.includes('google.')) {
+      source = 'Google';
+      medium = medium || 'Organic';
+    } else if (refLower.includes('bing.com')) {
+      source = 'Bing';
+      medium = medium || 'Organic';
+    } else {
+      try {
+        const parsed = new URL(cleanReferrer);
+        source = parsed.hostname.replace(/^www\./, '');
+        medium = medium || 'Referral';
+      } catch {
+        source = 'Referral';
+        medium = medium || 'Referral';
+      }
+    }
+  }
+
+  if (!source) {
+    source = cleanReferrer === '—' ? 'Direct' : 'Referral';
+    medium = medium || (cleanReferrer === '—' ? 'Direct' : 'Referral');
+  }
+
+  const isAttributed = source !== 'Direct' || Boolean(campaign);
+
+  return {
+    source,
+    medium,
+    campaign: campaign || (isAttributed && source !== 'Direct' ? 'None' : 'Direct'),
+    referrer: cleanReferrer,
+    isAttributed,
+  };
 }
 
 /**
@@ -73,7 +198,6 @@ export async function sendTelegramMessage(text: string): Promise<boolean> {
   const chatId = TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    // Graceful degradation when Telegram credentials are not configured
     return false;
   }
 
@@ -99,154 +223,413 @@ export async function sendTelegramMessage(text: string): Promise<boolean> {
 
     return true;
   } catch (err) {
-    // Non-blocking: log server-side without exposing secrets
     console.error('Failed to dispatch Telegram notification:', err instanceof Error ? err.message : 'Unknown error');
     return false;
   }
 }
 
-export interface VisitorPayload {
-  page: string;
+export interface BaseTelemetryPayload {
+  user?: string;
+  page?: string;
   source?: string;
+  medium?: string;
+  campaign?: string;
   referrer?: string;
   device?: string;
   screen?: string;
   country?: string;
-  user?: string;
+  city?: string;
+  region?: string;
 }
 
 /**
- * Dispatches a New Visitor notification
+ * Dispatches Level 2 — Visitor Intelligence Notification
  */
-export async function notifyVisitor(data: VisitorPayload): Promise<void> {
-  const time = getFormattedTime();
+export async function notifyVisitor(data: BaseTelemetryPayload): Promise<void> {
+  const time = getFormattedTimestamp();
   const page = data.page || '/';
-  const source = data.source || (data.referrer && data.referrer !== '—' ? 'Referral' : 'Direct');
-  const referrer = data.referrer || '—';
+  const location = formatLocation(data.country, data.city, data.region);
   const device = data.device || 'Desktop · Browser';
   const screen = data.screen || '—';
-  const country = data.country || '—';
   const user = data.user ? (data.user.startsWith('@') ? data.user : `@${data.user}`) : 'Anonymous';
+  const attr = resolveAttribution(data);
 
-  const message = [
-    '⚡ AETHER — NEW VISITOR',
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '👁️ AETHER — NEW VISITOR',
+    '━━━━━━━━━━━━━━━━━━━━',
     '',
-    '🌐 Page',
+    '👤 USER',
+    user,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '🌐 PAGE',
     page,
     '',
-    '🔗 Source',
-    source,
+    '📍 LOCATION',
+    location,
     '',
-    '↩️ Referrer',
-    referrer,
+    '📈 ACQUISITION',
+    `Source: ${attr.source}`,
+    `Medium: ${attr.medium}`,
+  ];
+
+  if (attr.campaign && attr.campaign !== 'Direct' && attr.campaign !== 'None') {
+    lines.push(`Campaign: ${attr.campaign}`);
+  }
+
+  if (attr.referrer !== '—') {
+    lines.push(`Referrer: ${attr.referrer}`);
+  }
+
+  lines.push(
     '',
-    '💻 Device',
+    '📱 DEVICE',
+    device,
+    `Screen: ${screen}`,
+    '━━━━━━━━━━━━━━━━━━━━'
+  );
+
+  await sendTelegramMessage(lines.join('\n'));
+}
+
+/**
+ * Dispatches Level 1 — New Signup Notification
+ */
+export async function notifySignup(data: BaseTelemetryPayload & { username?: string }): Promise<void> {
+  const time = getFormattedTimestamp();
+  const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'New User';
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
+  const page = data.page || '/onboarding';
+  const attr = resolveAttribution(data);
+
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🚀 AETHER — NEW SIGNUP',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '👤 USER',
+    user,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
     device,
     '',
-    '📱 Screen',
-    screen,
-    '',
-    '🌍 Country',
-    country,
-    '',
-    '🕐 Time',
-    time,
-    '',
-    '👤 User',
-    user,
-  ].join('\n');
+    '📈 ACQUISITION',
+    `Source: ${attr.source}`,
+    `Medium: ${attr.medium}`,
+  ];
 
-  await sendTelegramMessage(message);
+  if (attr.campaign && attr.campaign !== 'Direct' && attr.campaign !== 'None') {
+    lines.push(`Campaign: ${attr.campaign}`);
+  }
+
+  lines.push(
+    '',
+    '🔗 ENTRY',
+    page,
+    '',
+    '⚡ NEXT STEP',
+    'ONBOARDING',
+    '━━━━━━━━━━━━━━━━━━━━'
+  );
+
+  await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
- * Dispatches a New Signup notification
+ * Dispatches Level 1 — User Login Notification
  */
-export async function notifySignup(data: { username?: string; email?: string; device?: string }): Promise<void> {
-  const time = getFormattedTime();
-  const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'New User';
-  const masked = maskEmail(data.email);
+export async function notifyLogin(data: BaseTelemetryPayload & { username?: string }): Promise<void> {
+  const time = getFormattedTimestamp();
+  const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'Authenticated User';
+  const location = formatLocation(data.country, data.city, data.region);
   const device = data.device || 'Desktop · Browser';
+  const page = data.page || '/home';
+  const attr = resolveAttribution(data);
 
-  const message = [
-    '🚀 AETHER — NEW SIGNUP',
-    '',
-    `👤 ${user}`,
-    `📧 ${masked}`,
-    `🕐 ${time}`,
-    `💻 ${device}`,
-  ].join('\n');
-
-  await sendTelegramMessage(message);
-}
-
-/**
- * Dispatches a Login notification
- */
-export async function notifyLogin(data: { username?: string; email?: string; device?: string }): Promise<void> {
-  const time = getFormattedTime();
-  const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : (data.email ? maskEmail(data.email) : 'User');
-  const device = data.device || 'Desktop · Browser';
-
-  const message = [
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
     '🔐 AETHER — LOGIN',
+    '━━━━━━━━━━━━━━━━━━━━',
     '',
-    `👤 ${user}`,
-    `🕐 ${time}`,
-    `💻 ${device}`,
-  ].join('\n');
+    '👤 USER',
+    user,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
+    device,
+    '',
+    '🔗 DESTINATION',
+    page,
+  ];
 
-  await sendTelegramMessage(message);
+  if (attr.isAttributed) {
+    lines.push(
+      '',
+      '📈 ACQUISITION',
+      `Source: ${attr.source}`
+    );
+  }
+
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+
+  await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
- * Dispatches a Proof Created notification
+ * Dispatches Level 1 — Standard Proof Created Notification
  */
-export async function notifyProofCreated(data: {
+export async function notifyProofCreated(data: BaseTelemetryPayload & {
   username?: string;
   category: string;
   caption?: string;
   points: number;
+  hasPhoto?: boolean;
+  streak?: number;
 }): Promise<void> {
-  const time = getFormattedTime();
+  const time = getFormattedTimestamp();
   const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'User';
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
+  const proofType = data.hasPhoto ? 'Photo (+15 Flex Points)' : 'Text (+10 Flex Points)';
+  const streakDisplay = typeof data.streak === 'number' && data.streak > 0 ? `${data.streak} day streak` : 'Streak Active';
 
-  const parts = [
-    '🏆 AETHER — NEW PROOF',
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '✨ AETHER — PROOF CREATED',
+    '━━━━━━━━━━━━━━━━━━━━',
     '',
-    `👤 ${user}`,
-    '📂 Category',
-    data.category,
+    '👤 USER',
+    user,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '⚡ ACTION',
+    `Category: ${data.category}`,
+    `Type: ${proofType}`,
+    `Score: +${data.points} Flex Score`,
+    `Streak: ${streakDisplay}`,
   ];
 
   if (data.caption && data.caption.trim()) {
-    parts.push('📝 Caption', data.caption.trim());
+    lines.push(`Caption: "${data.caption.trim().slice(0, 200)}"`);
   }
 
-  parts.push(
-    '📈 Score',
-    `+${data.points} points`,
-    '🕐 Time',
-    time
+  lines.push(
+    '',
+    '📱 DEVICE',
+    device,
+    '━━━━━━━━━━━━━━━━━━━━'
   );
 
-  await sendTelegramMessage(parts.join('\n'));
+  await sendTelegramMessage(lines.join('\n'));
 }
 
 /**
- * Dispatches a Follow notification
+ * Dispatches Level 1 — High-Priority First Proof Created Notification
  */
-export async function notifyFollow(data: { follower: string; following: string }): Promise<void> {
-  const time = getFormattedTime();
+export async function notifyFirstProof(data: BaseTelemetryPayload & {
+  username?: string;
+  category: string;
+  caption?: string;
+  points: number;
+  hasPhoto?: boolean;
+}): Promise<void> {
+  const time = getFormattedTimestamp();
+  const user = data.username ? (data.username.startsWith('@') ? data.username : `@${data.username}`) : 'New User';
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
+  const proofType = data.hasPhoto ? 'Photo Evidence' : 'Text Record';
+  const attr = resolveAttribution(data);
+
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🏆 AETHER — FIRST PROOF',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '👤 USER',
+    user,
+    '',
+    '🎉 MILESTONE',
+    'First Proof Created (User Activated)',
+    '',
+    '⚡ DETAILS',
+    `Category: ${data.category}`,
+    `Type: ${proofType}`,
+    `Flex Score: +${data.points}`,
+    'Streak: 1 day streak started',
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
+    device,
+  ];
+
+  if (attr.isAttributed) {
+    lines.push(
+      '',
+      '📈 ACQUISITION',
+      `Source: ${attr.source}`
+    );
+  }
+
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+
+  await sendTelegramMessage(lines.join('\n'));
+}
+
+/**
+ * Dispatches Level 1 — New Follow Notification
+ */
+export async function notifyFollow(data: BaseTelemetryPayload & {
+  follower: string;
+  following: string;
+}): Promise<void> {
+  const time = getFormattedTimestamp();
   const follower = data.follower.startsWith('@') ? data.follower : `@${data.follower}`;
   const following = data.following.startsWith('@') ? data.following : `@${data.following}`;
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
 
-  const message = [
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
     '👥 AETHER — NEW FOLLOW',
+    '━━━━━━━━━━━━━━━━━━━━',
     '',
-    `${follower} → ${following}`,
-    `🕐 ${time}`,
-  ].join('\n');
+    '👤 FROM',
+    follower,
+    '',
+    '➡️ FOLLOWED',
+    following,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
+    device,
+    '━━━━━━━━━━━━━━━━━━━━',
+  ];
 
-  await sendTelegramMessage(message);
+  await sendTelegramMessage(lines.join('\n'));
 }
+
+/**
+ * Dispatches Level 1 — Profile Shared Notification
+ */
+export async function notifyProfileShared(data: BaseTelemetryPayload & {
+  username: string;
+  method: string;
+}): Promise<void> {
+  const time = getFormattedTimestamp();
+  const user = data.username.startsWith('@') ? data.username : `@${data.username}`;
+  const methodDisplay = data.method === 'native_share' ? 'Native Share Dialog' : 'Clipboard Link Copied';
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
+
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🔗 AETHER — PROFILE SHARED',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '👤 USER',
+    user,
+    '',
+    '⚡ METHOD',
+    methodDisplay,
+    '',
+    '🔗 PROFILE',
+    `/@${data.username.replace(/^@/, '')}`,
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '📍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
+    device,
+    '━━━━━━━━━━━━━━━━━━━━',
+  ];
+
+  await sendTelegramMessage(lines.join('\n'));
+}
+
+/**
+ * Dispatches Level 3 — Real-Time Security Event Alert
+ */
+export async function notifySecurityEvent(data: BaseTelemetryPayload & {
+  eventTitle: string;
+  endpoint?: string;
+  authStatus?: string;
+  result?: string;
+  details?: string;
+}): Promise<void> {
+  const time = getFormattedTimestamp();
+  const location = formatLocation(data.country, data.city, data.region);
+  const device = data.device || 'Desktop · Browser';
+  const user = data.user ? (data.user.startsWith('@') ? data.user : `@${data.user}`) : 'Unauthenticated / Anonymous';
+
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🚨 AETHER — SECURITY EVENT',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '⚠️ EVENT',
+    data.eventTitle,
+    '',
+    '👤 IDENTITY',
+    user,
+    '',
+    '📍 ENDPOINT',
+    data.endpoint || '—',
+    '',
+    '🔐 AUTH STATUS',
+    data.authStatus || 'Unauthenticated',
+    '',
+    '🛡️ RESULT',
+    data.result || 'Blocked',
+    '',
+    '🕐 WHEN',
+    time.full,
+    '',
+    '🌍 LOCATION',
+    location,
+    '',
+    '📱 DEVICE',
+    device,
+  ];
+
+  if (data.details) {
+    lines.push('', '📝 DETAILS', data.details.slice(0, 200));
+  }
+
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+
+  await sendTelegramMessage(lines.join('\n'));
+}
+

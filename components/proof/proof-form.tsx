@@ -117,6 +117,15 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId, username, isFirstP
       const newProof = await createProof(userId, category, caption.trim(), imageFile);
       const earnedPoints = newProof.points || (imageFile ? 15 : 10);
 
+      // Extract session attribution if available
+      let attribution: { source?: string; medium?: string; campaign?: string } = {};
+      try {
+        const stored = sessionStorage.getItem('aether_attr');
+        if (stored) attribution = JSON.parse(stored);
+      } catch {
+        // Fallback
+      }
+
       // Dispatch Telegram proof notification (non-blocking)
       fetch('/api/analytics/event', {
         method: 'POST',
@@ -127,7 +136,11 @@ export const ProofForm: React.FC<ProofFormProps> = ({ userId, username, isFirstP
           category,
           caption: caption.trim(),
           points: earnedPoints,
-          isFirstProof,
+          hasPhoto: Boolean(imageFile),
+          page: '/proof',
+          source: attribution.source,
+          medium: attribution.medium,
+          campaign: attribution.campaign,
         }),
       }).catch(() => {});
 

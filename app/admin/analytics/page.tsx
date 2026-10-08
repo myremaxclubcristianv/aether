@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getProductAnalytics } from '@/lib/analytics';
+import { notifySecurityEvent } from '@/lib/telegram';
 import { Metadata } from 'next';
 import { 
   Users, 
@@ -45,6 +46,14 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
   const userEmail = (user.email || '').toLowerCase();
 
   if (allowedEmails.length === 0 || !allowedEmails.includes(userEmail)) {
+    notifySecurityEvent({
+      eventTitle: 'Unauthorized admin dashboard access attempt',
+      endpoint: '/admin/analytics',
+      authStatus: 'Forbidden (Non-admin User)',
+      result: 'Rendered Access Restricted',
+      user: user.email || 'unknown',
+    }).catch(() => {});
+
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">
         <div className="w-12 h-12 rounded-full bg-red-950/40 border border-red-900 flex items-center justify-center text-red-400 mb-4">

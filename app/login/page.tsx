@@ -28,13 +28,15 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         const data = await signIn(email, password);
-        
-        // Dispatch Telegram login notification (non-blocking)
-        fetch('/api/analytics/event', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'LOGIN', email, username: data?.user?.user_metadata?.username }),
-        }).catch(() => {});
+
+        // Extract session attribution
+        let attribution: { source?: string; medium?: string; campaign?: string } = {};
+        try {
+          const stored = sessionStorage.getItem('aether_attr');
+          if (stored) attribution = JSON.parse(stored);
+        } catch {
+          // Fallback
+        }
 
         // Direct users to /onboarding if profile is incomplete, otherwise /home
         const supabase = createClient();
@@ -43,6 +45,22 @@ export default function LoginPage() {
           .select('username')
           .eq('id', data.user.id)
           .maybeSingle()) as { data: { username: string } | null };
+
+        const resolvedUsername = profile?.username || data?.user?.user_metadata?.username;
+
+        // Dispatch Telegram login notification (non-blocking)
+        fetch('/api/analytics/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'LOGIN',
+            username: resolvedUsername,
+            page: profile?.username ? '/home' : '/onboarding',
+            source: attribution.source,
+            medium: attribution.medium,
+            campaign: attribution.campaign,
+          }),
+        }).catch(() => {});
 
         if (profile?.username) {
           router.refresh();
@@ -54,11 +72,27 @@ export default function LoginPage() {
       } else {
         const data = await signUp(email, password);
 
+        // Extract session attribution
+        let attribution: { source?: string; medium?: string; campaign?: string } = {};
+        try {
+          const stored = sessionStorage.getItem('aether_attr');
+          if (stored) attribution = JSON.parse(stored);
+        } catch {
+          // Fallback
+        }
+
         // Dispatch Telegram signup notification (non-blocking)
         fetch('/api/analytics/event', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'SIGNUP', email }),
+          body: JSON.stringify({
+            type: 'SIGNUP',
+            username: data?.user?.user_metadata?.username || email.split('@')[0],
+            page: '/onboarding',
+            source: attribution.source,
+            medium: attribution.medium,
+            campaign: attribution.campaign,
+          }),
         }).catch(() => {});
 
         if (data?.session) {

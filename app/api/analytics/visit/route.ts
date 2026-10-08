@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { page, referrer, screen, user } = body;
+    const { page, referrer, screen, user, source, medium, campaign } = body;
 
     // Ignore static asset requests or undefined pages
     if (!page || typeof page !== 'string' || !page.startsWith('/') || page.length > 150) {
@@ -48,36 +48,38 @@ export async function POST(request: NextRequest) {
 
     const headers = request.headers;
     const uaHeader = headers.get('user-agent');
-    const { device, browser, os } = parseUserAgent(uaHeader);
+    const { full: deviceString } = parseUserAgent(uaHeader);
     const country =
       headers.get('x-vercel-ip-country') ||
       headers.get('cf-ipcountry') ||
       headers.get('x-country') ||
       '—';
+    const city = headers.get('x-vercel-ip-city') || undefined;
+    const region = headers.get('x-vercel-ip-country-region') || undefined;
 
     const cleanReferrer =
       referrer && typeof referrer === 'string' && referrer.trim() !== ''
         ? referrer.trim().slice(0, 200)
         : '—';
 
-    const source =
-      cleanReferrer !== '—' && !cleanReferrer.includes(request.nextUrl.host)
-        ? 'Referral'
-        : 'Direct';
-
     const cleanScreen = typeof screen === 'string' ? screen.slice(0, 50) : '—';
     const cleanUser = typeof user === 'string' ? user.trim().slice(0, 50) : 'Anonymous';
-
-    const deviceString = `${os} · ${browser}${device !== 'Desktop' ? ` (${device})` : ''}`;
+    const cleanSource = typeof source === 'string' ? source.trim().slice(0, 50) : undefined;
+    const cleanMedium = typeof medium === 'string' ? medium.trim().slice(0, 50) : undefined;
+    const cleanCampaign = typeof campaign === 'string' ? campaign.trim().slice(0, 50) : undefined;
 
     // Non-blocking notification dispatch
     notifyVisitor({
       page: page.slice(0, 150),
-      source,
+      source: cleanSource,
+      medium: cleanMedium,
+      campaign: cleanCampaign,
       referrer: cleanReferrer,
       device: deviceString,
       screen: cleanScreen,
       country: country.slice(0, 10),
+      city,
+      region,
       user: cleanUser,
     }).catch(() => {});
 

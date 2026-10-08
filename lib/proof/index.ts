@@ -51,12 +51,36 @@ export async function createProof(
   // 3. Upload image if provided with strict type & size validation
   if (imageFile) {
     if (imageFile.size > MAX_IMAGE_SIZE_BYTES) {
+      fetch('/api/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'SECURITY_EVENT',
+          eventTitle: 'Oversized image upload rejected',
+          endpoint: '/proof',
+          authStatus: 'Authenticated',
+          result: '400 Bad Request',
+          details: `Attempted file size: ${Math.round(imageFile.size / (1024 * 1024))}MB`,
+        }),
+      }).catch(() => {});
       throw new Error('Image file exceeds the 10MB size limit.');
     }
 
     const mime = (imageFile.type || '').toLowerCase();
     const safeExt = ALLOWED_MIME_TYPES[mime];
     if (!safeExt) {
+      fetch('/api/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'SECURITY_EVENT',
+          eventTitle: 'Disallowed file type upload rejected',
+          endpoint: '/proof',
+          authStatus: 'Authenticated',
+          result: '400 Bad Request',
+          details: `Rejected MIME: ${mime || 'unknown'}`,
+        }),
+      }).catch(() => {});
       throw new Error('Invalid image format. Allowed formats: JPG, PNG, WEBP, GIF.');
     }
 
