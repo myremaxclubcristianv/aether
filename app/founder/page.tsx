@@ -93,6 +93,7 @@ export default function FounderPage() {
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
           <Link href="/" className="hover:text-white transition-colors">Aether Home</Link>
+          <Link href="/legal" className="hover:text-white transition-colors">Legal Center</Link>
           <a href="#my-creations" className="hover:text-white transition-colors">Creations</a>
           <a href="#why-aether" className="hover:text-white transition-colors">Why Aether</a>
           <a href="#work-with-me" className="hover:text-white transition-colors">Work With Me</a>

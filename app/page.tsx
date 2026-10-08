@@ -420,6 +420,9 @@ export default async function RootPage() {
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
           <Link href="/founder" className="text-white hover:text-zinc-300 font-medium transition-colors">Founder</Link>
+          <Link href="/legal" className="text-zinc-300 hover:text-white transition-colors">Legal Center</Link>
+          <Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          <Link href="/legal/terms" className="hover:text-white transition-colors">Terms</Link>
           <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
           <Link href="/login" className="hover:text-white transition-colors">Get Started</Link>
           <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
@@ -427,7 +430,6 @@ export default async function RootPage() {
           <a href="#flex-score" className="hover:text-white transition-colors">Flex Score</a>
           <a href="#circle" className="hover:text-white transition-colors">Circle</a>
           <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-          <a href="#security" className="hover:text-white transition-colors">Security</a>
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-600">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { FOUNDER_DATA } from '@/lib/founder';
 
 const INTEREST_OPTIONS = [
@@ -272,13 +273,22 @@ export const WorkWithMe: React.FC = () => {
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={status === 'submitting'}
-                className="h-11 px-8 rounded-full bg-white text-black hover:bg-zinc-200 transition-all font-mono text-xs tracking-wider uppercase font-semibold disabled:opacity-50 shrink-0"
-              >
-                {status === 'submitting' ? 'Transmitting...' : 'Start A Conversation'}
-              </button>
+              <div className="flex flex-col sm:items-end gap-1.5">
+                <button
+                  type="submit"
+                  disabled={status === 'submitting'}
+                  className="h-11 px-8 rounded-full bg-white text-black hover:bg-zinc-200 transition-all font-mono text-xs tracking-wider uppercase font-semibold disabled:opacity-50 shrink-0"
+                >
+                  {status === 'submitting' ? 'Transmitting...' : 'Start A Conversation'}
+                </button>
+                <p className="text-[10px] text-zinc-500 font-light text-right">
+                  Information is processed to respond to your request per our{' '}
+                  <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
+              </div>
             </div>
 
             {errorMessage && (

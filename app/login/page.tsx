@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn, signUp } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
@@ -212,7 +213,7 @@ export default function LoginPage() {
         </Card>
 
         {/* Switch mode Link */}
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center gap-3">
           <button
             type="button"
             onClick={() => {
@@ -224,6 +225,16 @@ export default function LoginPage() {
           >
             {isLogin ? "DON'T HAVE AN ACCOUNT? REGISTER" : 'ALREADY REGISTERED? LOG IN'}
           </button>
+
+          <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-600">
+            <Link href="/legal/privacy" className="hover:text-zinc-400 transition-colors">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link href="/legal/terms" className="hover:text-zinc-400 transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </div>

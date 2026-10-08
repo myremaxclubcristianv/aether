@@ -122,6 +122,18 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
               <span>FOUNDER</span>
               <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400">↗</span>
             </Link>
+
+            <Link
+              href="/legal"
+              className={`flex items-center justify-between px-3.5 py-1.5 rounded-xl text-xs font-mono transition-all group select-none ${
+                pathname.startsWith('/legal')
+                  ? 'bg-zinc-900 text-white font-medium'
+                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-950/40'
+              }`}
+            >
+              <span>LEGAL & PRIVACY</span>
+              <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400">↗</span>
+            </Link>
           </nav>
         </div>
 

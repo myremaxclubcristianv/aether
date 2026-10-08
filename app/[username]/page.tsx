@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 const RESERVED_USERNAMES = new Set([
   'founder',
+  'legal',
   'api',
   'admin',
   'circle',
