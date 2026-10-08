@@ -1,0 +1,136 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn, signUp } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      if (isLogin) {
+        await signIn(email, password);
+        // Successful login redirects to home
+        router.push('/home');
+      } else {
+        await signUp(email, password);
+        setSuccessMsg('Account created. Check email for confirmation or proceed.');
+        // After signup, redirect to onboarding
+        router.push('/onboarding');
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'An authentication error occurred.';
+      setError(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col flex-1 justify-center px-6 py-12 bg-black min-h-screen">
+      <div className="w-full max-w-sm mx-auto flex flex-col gap-8">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center">
+          <span className="font-mono text-[10px] tracking-[0.4em] text-zinc-500 uppercase select-none">
+            A E T H E R
+          </span>
+          <h2 className="text-xl font-medium tracking-tight text-white mt-3">
+            {isLogin ? 'Welcome back' : 'Create credentials'}
+          </h2>
+          <p className="text-xs text-zinc-500 font-light mt-1.5 leading-relaxed">
+            {isLogin 
+              ? 'Enter email and password to access your achievements.' 
+              : 'Register your email to begin verifying your proofs.'}
+          </p>
+        </div>
+
+        {/* Auth form Card */}
+        <Card className="border-zinc-900 bg-zinc-950/20 p-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {error && (
+              <div className="text-[11px] font-mono text-red-400 bg-red-950/20 border border-red-900/30 px-3 py-2 rounded-md">
+                {error}
+              </div>
+            )}
+            
+            {successMsg && (
+              <div className="text-[11px] font-mono text-zinc-300 bg-zinc-900/40 border border-zinc-800 px-3 py-2 rounded-md">
+                {successMsg}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-zinc-600 font-light"
+                placeholder="email@example.com"
+                disabled={loading}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="password" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-10 px-3 rounded-md bg-zinc-900/40 border border-zinc-850 text-sm text-white focus:outline-none focus:border-zinc-700 transition-colors placeholder:text-•••••••• font-light"
+                placeholder="••••••••"
+                disabled={loading}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={loading}
+              className="w-full mt-2 font-mono text-xs tracking-widest uppercase rounded-md h-10"
+            >
+              {isLogin ? 'LOG IN' : 'REGISTER'}
+            </Button>
+          </form>
+        </Card>
+
+        {/* Switch mode Link */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError(null);
+              setSuccessMsg(null);
+            }}
+            className="text-[11px] font-mono tracking-wide text-zinc-500 hover:text-zinc-300 transition-colors underline decoration-zinc-800 underline-offset-4"
+          >
+            {isLogin ? "DON'T HAVE AN ACCOUNT? REGISTER" : 'ALREADY REGISTERED? LOG IN'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
