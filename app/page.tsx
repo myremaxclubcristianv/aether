@@ -1,7 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { FaqAccordion } from '@/components/landing/faq-accordion';
 import { Metadata } from 'next';
 
@@ -13,23 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootPage() {
-  // 1. Authenticated User Redirection
-  let shouldRedirectToHome = false;
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (user) {
-      shouldRedirectToHome = true;
-    }
-  } catch {
-    // If Supabase is unavailable, continue rendering the public landing experience
-  }
-
-  if (shouldRedirectToHome) {
-    redirect('/home');
-  }
-
   return (
     <div className="flex flex-col flex-1 w-full max-w-xl lg:max-w-2xl mx-auto border-x border-zinc-900/80 bg-black text-white min-h-screen selection:bg-zinc-800 selection:text-white shadow-2xl">
       {/* Top Sticky Product Navigation */}

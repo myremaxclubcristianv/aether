@@ -74,7 +74,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
       <aside className="hidden md:flex flex-col justify-between w-60 lg:w-64 h-screen sticky top-0 border-r border-zinc-900/80 px-5 py-8 shrink-0 z-30">
         <div className="flex flex-col gap-8">
           {/* Logo Brand */}
-          <Link href="/home" className="flex items-center gap-2 px-3 py-1 group">
+          <Link href="/" className="flex items-center gap-2 px-3 py-1 group">
             <span className="font-mono text-xs tracking-[0.35em] text-zinc-300 group-hover:text-white transition-colors uppercase font-semibold">
               AETHER
             </span>
