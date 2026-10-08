@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Plus, Users, User as UserIcon, LogOut, Flame } from 'lucide-react';
+import { Home, Plus, Users, User as UserIcon, LogOut, Flame, TrendingUp } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { signOut } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
@@ -63,6 +63,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
   const navItems = [
     { label: 'Home', href: '/home', icon: Home, exact: true },
+    { label: 'Progress', href: '/progress', icon: TrendingUp },
     { label: 'Proof', href: '/proof', icon: Plus, isAction: true },
     { label: 'Circle', href: '/circle', icon: Users },
     { label: 'Profile', href: profileHref, icon: UserIcon },
@@ -189,47 +190,57 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
       {/* Mobile Floating Bottom Bar (Visible on mobile only) */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-4 pb-5 pointer-events-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-3 pb-4 pointer-events-none"
         aria-label="Mobile navigation"
       >
-        <div className="pointer-events-auto max-w-md mx-auto flex items-center justify-around bg-zinc-950/90 backdrop-blur-xl border border-zinc-850 py-2 px-3 rounded-full shadow-2xl">
+        <div className="pointer-events-auto max-w-md mx-auto flex items-center justify-between bg-zinc-950/95 backdrop-blur-xl border border-zinc-850 py-1.5 px-2.5 rounded-full shadow-2xl">
           <Link
             href="/home"
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-full transition-colors ${
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
               pathname === '/home' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
             <Home className="w-4 h-4" />
-            <span className="text-[9px] font-mono tracking-wider">HOME</span>
+            <span className="text-[8px] font-mono tracking-wider">HOME</span>
           </Link>
 
           <Link
-            href="/circle"
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-full transition-colors ${
-              pathname.startsWith('/circle') ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            href="/progress"
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
+              pathname.startsWith('/progress') ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span className="text-[9px] font-mono tracking-wider">CIRCLE</span>
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-[8px] font-mono tracking-wider">PROGRESS</span>
           </Link>
 
           {/* Prominent Action Button for Proof */}
           <Link
             href="/proof"
-            className="flex items-center justify-center h-10 w-10 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-lg active:scale-95 shrink-0"
+            className="flex items-center justify-center h-10 w-10 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-lg active:scale-95 shrink-0 mx-1"
             aria-label="Create new proof"
           >
             <Plus className="w-5 h-5 stroke-[2.5]" />
           </Link>
 
           <Link
+            href="/circle"
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
+              pathname.startsWith('/circle') ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span className="text-[8px] font-mono tracking-wider">CIRCLE</span>
+          </Link>
+
+          <Link
             href={profileHref}
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-full transition-colors ${
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
               pathname === profileHref ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
             <UserIcon className="w-4 h-4" />
-            <span className="text-[9px] font-mono tracking-wider">PROFILE</span>
+            <span className="text-[8px] font-mono tracking-wider">PROFILE</span>
           </Link>
         </div>
       </nav>

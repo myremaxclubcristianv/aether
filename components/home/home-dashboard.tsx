@@ -6,6 +6,7 @@ import { Plus, Flame, Sparkles, ArrowRight, Compass } from 'lucide-react';
 import { UserProfile, ProofRecord } from '@/types';
 import { ProofCard } from '@/components/proof/proof-card';
 import { Avatar } from '@/components/ui/avatar';
+import { TodayModule } from '@/components/today/today-module';
 
 function getTimeOfDayGreeting(): string {
   const hour = new Date().getHours();
@@ -31,6 +32,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+  const todayProofs = initialProofs.filter((p) => new Date(p.createdAt) >= todayMidnight);
+
   const filteredProofs = initialProofs.filter((p) => {
     if (selectedCategory === 'All') return true;
     return p.category.toLowerCase() === selectedCategory.toLowerCase();
@@ -44,21 +49,36 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       {/* =========================================================================
           1. HERO HEADER
          ========================================================================= */}
-      <header className="flex flex-col gap-1">
-        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-500">
-          YOUR PROGRESS
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-          Good {getTimeOfDayGreeting()},{' '}
-          <span className="text-zinc-300 font-normal">@{userProfile.username}</span>
-        </h1>
-        <p className="text-xs text-zinc-400 font-light mt-0.5">
-          Keep building your proof.
-        </p>
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-500">
+            PERSONAL RECORD
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+            Good {getTimeOfDayGreeting()},{' '}
+            <span className="text-zinc-300 font-normal">@{userProfile.username}</span>
+          </h1>
+          <p className="text-xs text-zinc-400 font-light mt-0.5">
+            Keep building your proof.
+          </p>
+        </div>
+
+        <Link
+          href="/progress"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all w-fit"
+        >
+          <span>Progress Record</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </header>
 
       {/* =========================================================================
-          2. FLEX SCORE HERO MODULE
+          2. TODAY ACTION MODULE
+         ========================================================================= */}
+      <TodayModule userProfile={userProfile} todayProofs={todayProofs} />
+
+      {/* =========================================================================
+          3. FLEX SCORE HERO MODULE
          ========================================================================= */}
       <section className="p-6 sm:p-7 rounded-3xl bg-zinc-950/60 border border-zinc-850 shadow-2xl relative overflow-hidden flex flex-col gap-6">
         <div className="absolute top-0 right-0 w-48 h-48 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none" />
@@ -100,13 +120,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
           <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
             <span>{userProfile.flexScore === 0 ? 'Your first proof starts here' : `${progressPercent}% to ${nextMilestone}`}</span>
-            <span>{initialProofs.length} Proofs Logged</span>
+            <Link href="/progress" className="hover:text-zinc-300 underline transition-colors">
+              {initialProofs.length} Proofs Logged &bull; View Progress &rarr;
+            </Link>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          3. PRIMARY CTA — CREATE PROOF
+          4. PRIMARY CTA — CREATE PROOF
          ========================================================================= */}
       <Link
         href="/proof"

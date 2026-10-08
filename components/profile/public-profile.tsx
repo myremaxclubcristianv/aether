@@ -274,7 +274,7 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
                 <span>{profile.streak > 0 ? `${profile.streak} DAY STREAK` : '0 STREAK'}</span>
               </div>
               <span className="text-[10px] font-mono text-zinc-500">
-                {proofs.length} total proofs
+                {proofs.length} total proofs &bull; {new Set(proofs.map((p) => new Date(p.createdAt).toDateString())).size} active days
               </span>
             </div>
           </div>
@@ -291,6 +291,12 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
               <span>Goal: {nextMilestone} Flex Points</span>
               <span>{progressPercent}% Achieved</span>
             </div>
+          </div>
+
+          {/* Identity statement */}
+          <div className="pt-3 border-t border-zinc-900/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <span className="uppercase text-zinc-400 font-semibold">BUILT THROUGH PROOF</span>
+            <span>{new Set(proofs.map((p) => p.category || 'General')).size} categories proven</span>
           </div>
         </section>
 
