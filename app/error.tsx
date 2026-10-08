@@ -19,7 +19,7 @@ export default function Error({
       <h2 className="text-sm font-mono uppercase tracking-wider text-white">
         Something went wrong
       </h2>
-      <p className="text-xs text-zinc-550 max-w-xs mt-2 leading-relaxed">
+      <p className="text-xs text-zinc-400 max-w-xs mt-2 leading-relaxed">
         An unexpected error occurred. Please try again or refresh the page.
       </p>
       

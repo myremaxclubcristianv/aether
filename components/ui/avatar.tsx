@@ -18,13 +18,14 @@ export const Avatar: React.FC<AvatarProps> = ({
   className,
 }) => {
   const [hasError, setHasError] = React.useState(false);
-
-  const initials = fallback
+  const safeFallback = typeof fallback === 'string' && fallback.trim().length > 0 ? fallback : (alt || 'U');
+  const initials = safeFallback
     .split(' ')
+    .filter(Boolean)
     .map((n) => n[0])
     .join('')
     .substring(0, 2)
-    .toUpperCase();
+    .toUpperCase() || 'U';
 
   const sizeClasses = {
     sm: 'h-8 w-8 text-xs',

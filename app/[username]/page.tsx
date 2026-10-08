@@ -12,9 +12,17 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  let username = decodeURIComponent(resolvedParams.username);
+  let username = decodeURIComponent(resolvedParams?.username || '').trim();
   if (username.startsWith('@')) {
     username = username.slice(1);
+  }
+  username = username.trim();
+
+  if (!username) {
+    return {
+      title: 'Profile • Aether',
+      description: 'Track real achievements and verified proofs on Aether.',
+    };
   }
 
   const supabase = await createClient();
@@ -49,9 +57,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PublicProfilePage({ params }: PageProps) {
   const resolvedParams = await params;
-  let username = decodeURIComponent(resolvedParams.username);
+  let username = decodeURIComponent(resolvedParams?.username || '').trim();
   if (username.startsWith('@')) {
     username = username.slice(1);
+  }
+  username = username.trim();
+
+  if (!username) {
+    notFound();
   }
 
   const supabase = await createClient();
@@ -75,39 +88,59 @@ export default async function PublicProfilePage({ params }: PageProps) {
     .order('created_at', { ascending: false })) as { data: DbProof[] | null; error: unknown };
 
   // Resolve authenticated viewer ID
-  const { data: { user: authUser } } = await supabase.auth.getUser();
-  const viewerId = authUser?.id || null;
+  let viewerId: string | null = null;
+  try {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    viewerId = authUser?.id || null;
+  } catch (err) {
+    console.error('Error resolving viewer user:', err);
+  }
 
   // Resolve if viewer follows this profile
   let initialIsFollowing = false;
   if (viewerId && viewerId !== profileData.id) {
-    const { data: followRecord } = await supabase
-      .from('follows')
-      .select('id')
-      .eq('follower_id', viewerId)
-      .eq('following_id', profileData.id)
-      .maybeSingle();
-    initialIsFollowing = !!followRecord;
+    try {
+      const { data: followRecord } = await supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id', viewerId)
+        .eq('following_id', profileData.id)
+        .maybeSingle();
+      initialIsFollowing = !!followRecord;
+    } catch (err) {
+      console.error('Error checking follow status:', err);
+    }
   }
 
-  // Fetch follower/following counts via exact head queries
-  const { count: followersCount } = await supabase
-    .from('follows')
-    .select('id', { count: 'exact', head: true })
-    .eq('following_id', profileData.id);
-
-  const { count: followingCount } = await supabase
-    .from('follows')
-    .select('id', { count: 'exact', head: true })
-    .eq('follower_id', profileData.id);
+  // Fetch follower/following counts safely
+  let followersCount = 0;
+  let followingCount = 0;
+  try {
+    const [{ count: fCount }, { count: flwCount }] = await Promise.all([
+      supabase
+        .from('follows')
+        .select('id', { count: 'exact' })
+        .eq('following_id', profileData.id)
+        .limit(0),
+      supabase
+        .from('follows')
+        .select('id', { count: 'exact' })
+        .eq('follower_id', profileData.id)
+        .limit(0),
+    ]);
+    followersCount = fCount ?? 0;
+    followingCount = flwCount ?? 0;
+  } catch (err) {
+    console.error('Error querying follower counts:', err);
+  }
 
   const profile: UserProfile = {
     id: profileData.id,
     username: profileData.username,
-    avatarUrl: profileData.avatar_url,
-    bio: profileData.bio,
-    flexScore: profileData.flex_score,
-    streak: profileData.streak,
+    avatarUrl: profileData.avatar_url || null,
+    bio: profileData.bio || null,
+    flexScore: profileData.flex_score ?? 0,
+    streak: profileData.streak ?? 0,
     createdAt: profileData.created_at,
   };
 
@@ -127,21 +160,25 @@ export default async function PublicProfilePage({ params }: PageProps) {
     if (viewerId === profileData.id) {
       viewerProfile = profile;
     } else {
-      const { data: vData } = (await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', viewerId)
-        .maybeSingle()) as { data: DbProfile | null };
-      if (vData) {
-        viewerProfile = {
-          id: vData.id,
-          username: vData.username,
-          avatarUrl: vData.avatar_url,
-          bio: vData.bio,
-          flexScore: vData.flex_score,
-          streak: vData.streak,
-          createdAt: vData.created_at,
-        };
+      try {
+        const { data: vData } = (await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', viewerId)
+          .maybeSingle()) as { data: DbProfile | null };
+        if (vData) {
+          viewerProfile = {
+            id: vData.id,
+            username: vData.username,
+            avatarUrl: vData.avatar_url || null,
+            bio: vData.bio || null,
+            flexScore: vData.flex_score ?? 0,
+            streak: vData.streak ?? 0,
+            createdAt: vData.created_at,
+          };
+        }
+      } catch (err) {
+        console.error('Error fetching viewer profile:', err);
       }
     }
   }
@@ -153,8 +190,8 @@ export default async function PublicProfilePage({ params }: PageProps) {
       viewerId={viewerId}
       viewerProfile={viewerProfile}
       initialIsFollowing={initialIsFollowing}
-      initialFollowersCount={followersCount || 0}
-      followingCount={followingCount || 0}
+      initialFollowersCount={followersCount}
+      followingCount={followingCount}
     />
   );
 }
