@@ -1,74 +1,57 @@
-import { createClient } from '@/lib/supabase/client';
-import { calculateProofPoints } from '@/lib/score';
 import { ProofRecord } from '@/types';
+import { ALLOWED_CATEGORIES, ALLOWED_MIME_TYPES, MAX_IMAGE_SIZE_BYTES } from './constants';
 
-const ALLOWED_CATEGORIES = new Set([
-  'Fitness',
-  'Learning',
-  'Creating',
-  'Building',
-  'Lifestyle',
-  'Achievement',
-  'General',
-]);
-
-const ALLOWED_MIME_TYPES: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/jpg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-  'image/gif': 'gif',
-};
-
-const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+export { ALLOWED_CATEGORIES, ALLOWED_MIME_TYPES, MAX_IMAGE_SIZE_BYTES };
 
 /**
- * Creates a proof: uploads image to storage, inserts proof record, and updates user profile flex score.
+ * Creates a proof by dispatching to the authoritative server-side endpoint.
+ * Ensures the user's identity is derived strictly from the trusted server session,
+ * RLS and storage isolation policies are enforced, and Flex Score is updated.
  */
 export async function createProof(
-  userId: string,
-  category: string,
-  caption: string,
-  imageFile?: File | null
+  userIdOrCategory: string,
+  categoryOrCaption?: string,
+  captionOrFile?: string | File | null,
+  maybeImageFile?: File | null
 ): Promise<ProofRecord> {
-  const supabase = createClient();
+  let targetUserId: string | undefined;
+  let targetCategory: string;
+  let targetCaption: string;
+  let targetImageFile: File | null = null;
 
-  // 1. Verify active authenticated user session
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user || user.id !== userId) {
-    throw new Error('Unauthorized proof creation attempt.');
+  if (typeof captionOrFile === 'string') {
+    // 4 arguments: (userId, category, caption, imageFile)
+    targetUserId = userIdOrCategory;
+    targetCategory = categoryOrCaption || 'General';
+    targetCaption = captionOrFile;
+    targetImageFile = maybeImageFile || null;
+  } else {
+    // 3 arguments: (category, caption, imageFile)
+    targetCategory = userIdOrCategory;
+    targetCaption = categoryOrCaption || '';
+    targetImageFile = (captionOrFile as File | null) || null;
   }
 
-  // 2. Validate category and caption
-  const validCategory = ALLOWED_CATEGORIES.has(category) ? category : 'General';
-  const cleanCaption = (caption || '').trim().slice(0, 1000);
-  if (!cleanCaption) {
-    throw new Error('Please describe what you actually accomplished.');
+  // Pre-validate in browser for immediate responsive feedback
+  if (targetImageFile && targetImageFile.size > MAX_IMAGE_SIZE_BYTES) {
+    fetch('/api/analytics/event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'SECURITY_EVENT',
+        eventTitle: 'Oversized image upload rejected',
+        endpoint: '/proof',
+        authStatus: 'Authenticated',
+        result: '400 Bad Request',
+        details: `Attempted file size: ${Math.round(targetImageFile.size / (1024 * 1024))}MB`,
+      }),
+    }).catch(() => {});
+    throw new Error('Image file exceeds the 10MB size limit.');
   }
 
-  let imageUrl: string | null = null;
-
-  // 3. Upload image if provided with strict type & size validation
-  if (imageFile) {
-    if (imageFile.size > MAX_IMAGE_SIZE_BYTES) {
-      fetch('/api/analytics/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'SECURITY_EVENT',
-          eventTitle: 'Oversized image upload rejected',
-          endpoint: '/proof',
-          authStatus: 'Authenticated',
-          result: '400 Bad Request',
-          details: `Attempted file size: ${Math.round(imageFile.size / (1024 * 1024))}MB`,
-        }),
-      }).catch(() => {});
-      throw new Error('Image file exceeds the 10MB size limit.');
-    }
-
-    const mime = (imageFile.type || '').toLowerCase();
-    const safeExt = ALLOWED_MIME_TYPES[mime];
-    if (!safeExt) {
+  if (targetImageFile) {
+    const mime = (targetImageFile.type || '').toLowerCase();
+    if (!ALLOWED_MIME_TYPES[mime]) {
       fetch('/api/analytics/event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,75 +66,33 @@ export async function createProof(
       }).catch(() => {});
       throw new Error('Invalid image format. Allowed formats: JPG, PNG, WEBP, GIF.');
     }
-
-    const safeRandom = Math.random().toString(36).substring(2, 10);
-    const fileName = `${user.id}/${Date.now()}_${safeRandom}.${safeExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('proof-images')
-      .upload(fileName, imageFile, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: mime,
-      });
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    const { data } = supabase.storage
-      .from('proof-images')
-      .getPublicUrl(fileName);
-
-    imageUrl = data.publicUrl;
   }
 
-  // 4. Calculate points authoritatively using centralized score module
-  const points = calculateProofPoints(!!imageFile);
-
-  // 5. Create proof record
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: proof, error: proofError } = await (supabase.from('proofs') as any)
-    .insert({
-      user_id: user.id,
-      category: validCategory,
-      caption: cleanCaption,
-      image_url: imageUrl,
-      points,
-    })
-    .select()
-    .single();
-
-  if (proofError || !proof) {
-    throw proofError || new Error('Failed to create proof record.');
+  const cleanCaption = (targetCaption || '').trim().slice(0, 1000);
+  if (!cleanCaption) {
+    throw new Error('Please describe what you actually accomplished.');
   }
 
-  // 6. Update user's flex_score in profiles table
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase.from('profiles') as any)
-    .select('flex_score')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  const currentScore = profile?.flex_score || 0;
-  const newScore = currentScore + points;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: profileError } = await (supabase.from('profiles') as any)
-    .update({ flex_score: newScore })
-    .eq('id', user.id);
-
-  if (profileError) {
-    console.error('Failed to update flex score:', profileError);
+  const formData = new FormData();
+  formData.append('category', targetCategory);
+  formData.append('caption', cleanCaption);
+  if (targetUserId) {
+    formData.append('userId', targetUserId);
+  }
+  if (targetImageFile) {
+    formData.append('image', targetImageFile);
   }
 
-  return {
-    id: proof.id,
-    userId: proof.user_id,
-    imageUrl: proof.image_url,
-    category: proof.category,
-    caption: proof.caption,
-    points: proof.points,
-    createdAt: proof.created_at,
-  };
+  const response = await fetch('/api/proof', {
+    method: 'POST',
+    body: formData,
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(result?.error || 'Failed to create proof.');
+  }
+
+  return result.proof;
 }
