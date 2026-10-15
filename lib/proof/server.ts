@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { calculateProofPoints } from '@/lib/score';
 import { ProofRecord } from '@/types';
 import { ALLOWED_CATEGORIES, ALLOWED_MIME_TYPES, MAX_IMAGE_SIZE_BYTES } from './constants';
+import { linkProofToEligibleChallenges } from '@/lib/challenges';
 
 export { ALLOWED_CATEGORIES, ALLOWED_MIME_TYPES, MAX_IMAGE_SIZE_BYTES };
 
@@ -145,6 +146,11 @@ export async function createProofServer(params: CreateProofServerParams): Promis
   if (profileError) {
     console.error('[AETHER PROOF] Failed to update flex score:', profileError.message);
   }
+
+  // 9. Authoritatively link proof to active eligible challenges
+  linkProofToEligibleChallenges(proof.id, user.id, validCategory).catch((err) => {
+    console.error('[AETHER PROOF] Challenge link error:', err);
+  });
 
   return {
     id: proof.id,

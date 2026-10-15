@@ -8,20 +8,25 @@ import { Avatar } from '@/components/ui/avatar';
 import { ProofCard } from '@/components/proof/proof-card';
 import { followUser, unfollowUser } from '@/lib/circle';
 import { createClient } from '@/lib/supabase/client';
+import { DiscoveredUser } from '@/lib/circle/discover';
+import { DiscoverPeople } from '@/components/circle/discover-people';
 
 interface CircleDashboardProps {
   initialFeed: ProofWithProfile[];
   initialSuggestions: UserProfile[];
+  initialDiscover?: DiscoveredUser[];
   currentUserId: string;
 }
 
 export const CircleDashboard: React.FC<CircleDashboardProps> = ({
   initialFeed,
   initialSuggestions,
+  initialDiscover = [],
   currentUserId,
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const [activeTab, setActiveTab] = useState<'feed' | 'discover'>('feed');
   const [feed, setFeed] = useState<ProofWithProfile[]>(initialFeed);
   const [suggestions] = useState<UserProfile[]>(initialSuggestions);
 
@@ -201,21 +206,57 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
 
   return (
     <div className="flex flex-col gap-7">
-      {/* 1. Header */}
-      <header className="flex flex-col gap-1 border-b border-zinc-900 pb-4">
-        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-500">
-          SOCIAL LAYER
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-          Circle
-        </h1>
-        <p className="text-xs text-zinc-400 font-light mt-0.5">
-          People worth keeping up with. Actions over appearances.
-        </p>
+      {/* 1. Header & Tab Navigation */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-500">
+            SOCIAL LAYER
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white uppercase">
+            Circle
+          </h1>
+          <p className="text-xs text-zinc-400 font-light mt-0.5">
+            People worth keeping up with. Actions over appearances.
+          </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="inline-flex rounded-xl bg-zinc-900 p-1 border border-zinc-800 text-xs font-mono self-start sm:self-auto">
+          <button
+            onClick={() => setActiveTab('feed')}
+            className={`px-3.5 py-1.5 rounded-lg transition-all ${
+              activeTab === 'feed'
+                ? 'bg-zinc-800 text-white font-medium shadow'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Circle Feed
+          </button>
+          <button
+            onClick={() => setActiveTab('discover')}
+            className={`px-3.5 py-1.5 rounded-lg transition-all inline-flex items-center gap-1.5 ${
+              activeTab === 'discover'
+                ? 'bg-zinc-800 text-white font-medium shadow'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <span>Discover People</span>
+            {initialDiscover.length > 0 && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            )}
+          </button>
+        </div>
       </header>
 
-      {/* 2. Search Input */}
-      <div className="relative">
+      {activeTab === 'discover' ? (
+        <DiscoverPeople
+          initialUsers={initialDiscover}
+          currentUserId={currentUserId}
+        />
+      ) : (
+        <>
+          {/* 2. Search Input */}
+          <div className="relative">
         <div className="absolute left-4 top-3 text-zinc-500 pointer-events-none">
           <Search className="w-4 h-4" />
         </div>
@@ -404,6 +445,8 @@ export const CircleDashboard: React.FC<CircleDashboardProps> = ({
             })}
           </div>
         </section>
+      )}
+        </>
       )}
     </div>
   );

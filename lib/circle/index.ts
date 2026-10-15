@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { UserProfile, ProofWithProfile, DbProfile, DbProof } from '@/types';
 import { notifyFollow } from '@/lib/telegram';
+import { createNotification } from '@/lib/notifications';
 
 /**
  * Follow another user. Checks are enforced server-side and via DB RLS & constraints.
@@ -38,9 +39,21 @@ export async function followUser(followerId: string, followingId: string) {
 
     const follower = profiles?.find((p) => p.id === actualFollowerId)?.username || 'user';
     const following = profiles?.find((p) => p.id === followingId)?.username || 'user';
+    
+    // In-app notification
+    createNotification({
+      userId: followingId,
+      actorId: actualFollowerId,
+      type: 'new_follower',
+      title: 'New Follower',
+      body: `@${follower} started following your achievements.`,
+      link: `/${follower}`,
+    }).catch(() => {});
+
+    // Telegram notification
     await notifyFollow({ follower, following });
   } catch (err) {
-    console.error('[AETHER TELEGRAM FOLLOW] Notification dispatch error:', err);
+    console.error('[AETHER FOLLOW NOTIFICATION] Notification dispatch error:', err);
   }
 
   return { success: true, error: null };

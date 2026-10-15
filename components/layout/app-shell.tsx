@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Plus, Users, User as UserIcon, LogOut, Flame, TrendingUp } from 'lucide-react';
+import { Home, Plus, Users, User as UserIcon, LogOut, Flame, TrendingUp, Trophy, Bell } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { signOut } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
@@ -18,12 +18,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
   const pathname = usePathname();
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(initialUser || null);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   useEffect(() => {
-    if (initialUser) return;
     let isMounted = true;
 
     async function loadUserProfile() {
+      if (initialUser) return;
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
@@ -42,7 +43,23 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
         console.error('AppShell profile resolve error:', err);
       }
     }
+
+    async function loadUnreadCount() {
+      try {
+        const res = await fetch('/api/notifications?count_only=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && typeof data.unreadCount === 'number' && isMounted) {
+            setUnreadCount(data.unreadCount);
+          }
+        }
+      } catch {
+        // Silently ignore if not authenticated or network issue
+      }
+    }
+
     loadUserProfile();
+    loadUnreadCount();
 
     return () => {
       isMounted = false;
@@ -64,8 +81,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
   const navItems = [
     { label: 'Home', href: '/home', icon: Home, exact: true },
     { label: 'Progress', href: '/progress', icon: TrendingUp },
+    { label: 'Challenges', href: '/challenges', icon: Trophy },
     { label: 'Proof', href: '/proof', icon: Plus, isAction: true },
     { label: 'Circle', href: '/circle', icon: Users },
+    {
+      label: 'Notifications',
+      href: '/notifications',
+      icon: Bell,
+      badge: unreadCount > 0 ? unreadCount : null,
+    },
     { label: 'Profile', href: profileHref, icon: UserIcon },
   ];
 
@@ -103,6 +127,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
                     <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     <span>{item.label}</span>
                   </div>
+                  {item.badge !== undefined && item.badge !== null && (
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">
+                      {item.badge}
+                    </span>
+                  )}
                   {item.isAction && (
                     <span className="font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 group-hover:bg-zinc-700">
                       NEW
@@ -188,6 +217,36 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
       {/* Main Content Container (Mobile: centered max-w-md / Desktop: centered max-w-xl / lg:max-w-2xl) */}
       <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl min-h-screen border-x border-zinc-900/80 flex flex-col relative pb-28 md:pb-12 shadow-2xl">
+        {/* Mobile Sticky Top Header */}
+        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-zinc-900/80 bg-black/90 backdrop-blur sticky top-0 z-20">
+          <Link href="/" className="font-mono text-xs tracking-[0.35em] text-zinc-300 uppercase font-semibold">
+            AETHER
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/challenges"
+              className={`p-1.5 rounded-lg transition-colors ${
+                pathname.startsWith('/challenges') ? 'text-white bg-zinc-900' : 'text-zinc-400 hover:text-white'
+              }`}
+              aria-label="Challenges"
+            >
+              <Trophy className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/notifications"
+              className={`p-1.5 rounded-lg relative transition-colors ${
+                pathname.startsWith('/notifications') ? 'text-white bg-zinc-900' : 'text-zinc-400 hover:text-white'
+              }`}
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-black" />
+              )}
+            </Link>
+          </div>
+        </header>
+
         {children}
       </div>
 

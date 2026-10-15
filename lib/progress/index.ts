@@ -41,6 +41,8 @@ export interface WeeklyRecapData {
     flexScoreGained: number;
     topCategory: string;
     categoriesCount: number;
+    categories: { name: string; count: number }[];
+    proofs: ProofRecord[];
   };
   previousWeek: {
     startDate: string;
@@ -48,6 +50,10 @@ export interface WeeklyRecapData {
     proofCount: number;
     activeDays: number;
     flexScoreGained: number;
+    topCategory: string;
+    categoriesCount: number;
+    categories: { name: string; count: number }[];
+    proofs: ProofRecord[];
   };
   growthPercent: number | null; // e.g. +25 or -10, or null if previous week has 0 proofs
   summaryStatus: 'BUILDING' | 'STEADY' | 'RESETTING' | 'STARTING';
@@ -98,13 +104,13 @@ export function computeUserProgress(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  // 1. Calculate active days (distinct YYYY-MM-DD dates)
+  // 1. Calculate active days (distinct YYYY-MM-DD dates in UTC)
   const distinctDatesSet = new Set<string>();
   const proofsByDateMap = new Map<string, ProofRecord[]>();
 
   sortedProofs.forEach((p) => {
     const d = new Date(p.createdAt);
-    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dateKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
     distinctDatesSet.add(dateKey);
 
     const existing = proofsByDateMap.get(dateKey) || [];
@@ -215,48 +221,94 @@ export function computeUserProgress(
     activeDaysLast7: activeDaysLast7Set.size,
   };
 
-  // 5. Compute Weekly Recap (Current week Monday-Sunday)
+  // 5. Compute Weekly Recap (Deterministic UTC Monday-Sunday calendar week boundary)
+  function getUTCMonday(d: Date): Date {
+    const date = new Date(d);
+    const day = date.getUTCDay(); // 0 is Sunday, 1 is Monday...
+    const diff = date.getUTCDate() - day + (day === 0 ? -6 : 1);
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff, 0, 0, 0, 0));
+  }
+
+  const currentMonday = getUTCMonday(now);
+  const currentSunday = new Date(currentMonday.getTime() + 7 * 24 * 60 * 60 * 1000 - 1);
+  const prevMonday = new Date(currentMonday.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const prevSunday = new Date(currentMonday.getTime() - 1);
+
+  const currentWeekProofs = sortedProofs.filter((p) => {
+    const t = new Date(p.createdAt).getTime();
+    return t >= currentMonday.getTime() && t <= currentSunday.getTime();
+  });
+
+  const prevWeekProofs = sortedProofs.filter((p) => {
+    const t = new Date(p.createdAt).getTime();
+    return t >= prevMonday.getTime() && t <= prevSunday.getTime();
+  });
+
+  // Current week metrics
+  const currentActiveDays = new Set<string>();
+  const currentCatCounts: Record<string, number> = {};
+  let currentScoreGained = 0;
+  currentWeekProofs.forEach((p) => {
+    const d = new Date(p.createdAt);
+    const dateKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    currentActiveDays.add(dateKey);
+    const c = p.category || 'General';
+    currentCatCounts[c] = (currentCatCounts[c] || 0) + 1;
+    currentScoreGained += typeof p.points === 'number' ? p.points : 10;
+  });
+  const currentSortedCats = Object.entries(currentCatCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Previous week metrics
+  const prevActiveDays = new Set<string>();
+  const prevCatCounts: Record<string, number> = {};
+  let prevScoreGained = 0;
+  prevWeekProofs.forEach((p) => {
+    const d = new Date(p.createdAt);
+    const dateKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    prevActiveDays.add(dateKey);
+    const c = p.category || 'General';
+    prevCatCounts[c] = (prevCatCounts[c] || 0) + 1;
+    prevScoreGained += typeof p.points === 'number' ? p.points : 10;
+  });
+  const prevSortedCats = Object.entries(prevCatCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
   let growthPercent: number | null = null;
-  if (proofsPrev7Days.length > 0) {
+  if (prevWeekProofs.length > 0) {
     growthPercent = Math.round(
-      ((proofsLast7Days.length - proofsPrev7Days.length) / proofsPrev7Days.length) * 100
+      ((currentWeekProofs.length - prevWeekProofs.length) / prevWeekProofs.length) * 100
     );
   }
 
-  let weeklyTopCategory = 'None';
-  const weekCatCounts: Record<string, number> = {};
-  let weekScore = 0;
-  proofsLast7Days.forEach((p) => {
-    const c = p.category || 'General';
-    weekCatCounts[c] = (weekCatCounts[c] || 0) + 1;
-    weekScore += p.points || 10;
-  });
-  const sortedWeekCats = Object.entries(weekCatCounts).sort((a, b) => b[1] - a[1]);
-  if (sortedWeekCats.length > 0) {
-    weeklyTopCategory = sortedWeekCats[0][0];
+  function formatUTCDate(d: Date): string {
+    return d.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
   }
-
-  let prevWeekScore = 0;
-  proofsPrev7Days.forEach((p) => {
-    prevWeekScore += p.points || 10;
-  });
 
   const weeklyRecap: WeeklyRecapData = {
     currentWeek: {
-      startDate: sevenDaysAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      endDate: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      proofCount: proofsLast7Days.length,
-      activeDays: activeDaysLast7Set.size,
-      flexScoreGained: weekScore,
-      topCategory: weeklyTopCategory,
-      categoriesCount: sortedWeekCats.length,
+      startDate: formatUTCDate(currentMonday),
+      endDate: formatUTCDate(currentSunday),
+      proofCount: currentWeekProofs.length,
+      activeDays: currentActiveDays.size,
+      flexScoreGained: currentScoreGained,
+      topCategory: currentSortedCats[0]?.name || 'None',
+      categoriesCount: currentSortedCats.length,
+      categories: currentSortedCats,
+      proofs: currentWeekProofs,
     },
     previousWeek: {
-      startDate: fourteenDaysAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      endDate: sevenDaysAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      proofCount: proofsPrev7Days.length,
-      activeDays: new Set(proofsPrev7Days.map((p) => new Date(p.createdAt).toDateString())).size,
-      flexScoreGained: prevWeekScore,
+      startDate: formatUTCDate(prevMonday),
+      endDate: formatUTCDate(prevSunday),
+      proofCount: prevWeekProofs.length,
+      activeDays: prevActiveDays.size,
+      flexScoreGained: prevScoreGained,
+      topCategory: prevSortedCats[0]?.name || 'None',
+      categoriesCount: prevSortedCats.length,
+      categories: prevSortedCats,
+      proofs: prevWeekProofs,
     },
     growthPercent,
     summaryStatus: momentumState,

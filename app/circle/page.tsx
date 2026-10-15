@@ -2,6 +2,7 @@ import React from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getCircleFeed, getSuggestedUsers } from '@/lib/circle';
+import { getDiscoveredUsers } from '@/lib/circle/discover';
 import { DbProfile } from '@/types';
 import { CircleDashboard } from '@/components/circle/circle-dashboard';
 import { AppShell } from '@/components/layout/app-shell';
@@ -48,9 +49,10 @@ export default async function CirclePage() {
     createdAt: profile.created_at,
   };
 
-  // Fetch initial circle feed and suggestion list on the server side
+  // Fetch initial circle feed, suggestions, and discover recommendations
   const initialFeed = await getCircleFeed(user.id);
   const initialSuggestions = await getSuggestedUsers(user.id);
+  const initialDiscover = await getDiscoveredUsers(user.id);
 
   return (
     <AppShell initialUser={userProfile}>
@@ -58,6 +60,7 @@ export default async function CirclePage() {
         <CircleDashboard
           initialFeed={initialFeed}
           initialSuggestions={initialSuggestions}
+          initialDiscover={initialDiscover}
           currentUserId={user.id}
         />
       </div>
