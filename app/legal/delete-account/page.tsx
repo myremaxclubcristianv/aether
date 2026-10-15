@@ -137,7 +137,7 @@ export default function DeleteAccountPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-zinc-900">
               <Link
                 href="/legal/data-rights"
-                className="text-xs font-mono text-zinc-500 hover:text-zinc-300 underline"
+                className="text-xs font-mono text-zinc-400 hover:text-white underline min-h-[24px] inline-flex items-center"
               >
                 Or submit a manual erasure request →
               </Link>

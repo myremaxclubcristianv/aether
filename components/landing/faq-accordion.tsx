@@ -87,13 +87,13 @@ export const FaqAccordion: React.FC = () => {
             <button
               type="button"
               onClick={() => toggle(idx)}
-              className="w-full flex items-center justify-between text-left gap-4 py-1 group focus:outline-none"
+              className="w-full flex items-center justify-between text-left gap-4 py-2 min-h-[36px] group focus:outline-none"
               aria-expanded={isOpen}
             >
               <span className="text-xs sm:text-sm font-medium text-zinc-200 group-hover:text-white transition-colors">
                 {item.question}
               </span>
-              <span className="font-mono text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0">
+              <span className="font-mono text-xs text-zinc-400 group-hover:text-zinc-200 transition-colors shrink-0">
                 {isOpen ? '—' : '+'}
               </span>
             </button>
@@ -101,7 +101,7 @@ export const FaqAccordion: React.FC = () => {
               <div className="pt-2 pb-1 text-xs text-zinc-400 font-light leading-relaxed animate-in fade-in duration-200">
                 <p>{item.answer}</p>
                 {item.category && (
-                  <span className="inline-block mt-2 font-mono text-[9px] uppercase tracking-widest text-zinc-600">
+                  <span className="inline-block mt-2 font-mono text-[9px] uppercase tracking-widest text-zinc-400">
                     Topic: {item.category}
                   </span>
                 )}

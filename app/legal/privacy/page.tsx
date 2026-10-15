@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           PRIVACY POLICY
         </h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-400">
           <span>{LEGAL_METADATA.version}</span>
           <span>•</span>
           <span>Last Updated: {LEGAL_METADATA.lastUpdated}</span>
@@ -40,12 +40,12 @@ export default function PrivacyPolicyPage() {
           This Privacy Policy explains how personal data is processed in connection with the <strong>AETHER</strong> application, accessible at <code>https://aether.cristianvaduva.com</code> and associated platform infrastructure.
         </p>
         <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1 text-xs font-mono">
-          <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Data Controller Information</span>
+          <span className="text-zinc-400 uppercase tracking-wider text-[10px]">Data Controller Information</span>
           <span className="text-white font-medium">{LEGAL_METADATA.controllerPlaceholder}</span>
           <span className="text-zinc-400">Registered Office: {LEGAL_METADATA.registeredAddressPlaceholder}</span>
           <span className="text-zinc-400">Company ID / CUI: {LEGAL_METADATA.registrationNumberPlaceholder}</span>
           <span className="text-zinc-400">Privacy Contact: <a href="mailto:cristianvaduva@duck.com" className="text-white underline">cristianvaduva@duck.com</a></span>
-          <span className="text-zinc-500 mt-1">{LEGAL_METADATA.dpoStatement}</span>
+          <span className="text-zinc-400 mt-1">{LEGAL_METADATA.dpoStatement}</span>
         </div>
       </section>
 
@@ -112,7 +112,7 @@ export default function PrivacyPolicyPage() {
           <p className="text-zinc-400">
             <strong>What is never transmitted:</strong> Passwords, session cookies, auth tokens, private encryption keys, payment data, or raw user communications.
           </p>
-          <p className="text-zinc-500 font-mono text-[11px]">
+          <p className="text-zinc-400 font-mono text-[11px]">
             Legal Basis: Legitimate interest (system monitoring, platform security, real-time abuse prevention, and operational visibility).
           </p>
         </div>
@@ -184,7 +184,7 @@ export default function PrivacyPolicyPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-light">
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-semibold">Supabase Inc.</span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">Database & Storage Provider</span>
+            <span className="text-[10px] font-mono text-zinc-400 uppercase">Database & Storage Provider</span>
             <p className="text-zinc-400 text-[11px] mt-1">
               Provides managed PostgreSQL database, authentication services, row-level security enforcement, and encrypted media storage.
             </p>
@@ -192,7 +192,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-semibold">Vercel Inc.</span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">Hosting & Edge Runtime</span>
+            <span className="text-[10px] font-mono text-zinc-400 uppercase">Hosting & Edge Runtime</span>
             <p className="text-zinc-400 text-[11px] mt-1">
               Provides global edge hosting, serverless compute execution, SSL termination, and geographic header resolution.
             </p>
@@ -200,7 +200,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-semibold">Telegram Messenger Inc.</span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">Notification Dispatch API</span>
+            <span className="text-[10px] font-mono text-zinc-400 uppercase">Notification Dispatch API</span>
             <p className="text-zinc-400 text-[11px] mt-1">
               Receives server-side operational intelligence notifications dispatched via the official Telegram Bot API to the operator&apos;s secured channel.
             </p>

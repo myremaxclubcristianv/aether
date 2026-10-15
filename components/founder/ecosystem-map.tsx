@@ -4,7 +4,7 @@ export const EcosystemMap: React.FC = () => {
   return (
     <section className="py-12 border-b border-zinc-900 flex flex-col gap-8">
       <div className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
           04 / ARCHITECTURAL COMPOSITION
         </span>
         <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -22,7 +22,7 @@ export const EcosystemMap: React.FC = () => {
         {/* Level 1: Root Founder */}
         <div className="flex justify-center">
           <div className="bg-white text-black px-6 py-3 rounded-xl flex flex-col items-center gap-0.5 shadow-lg">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-700 font-semibold">
               ORIGIN & FOUNDER
             </span>
             <span className="font-sans text-sm sm:text-base font-bold tracking-tight">
@@ -68,25 +68,25 @@ export const EcosystemMap: React.FC = () => {
         {/* Level 3: Vertical Ecosystem Nodes */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div className="bg-zinc-900/50 border border-zinc-850 rounded-lg p-3 flex flex-col gap-1">
-            <span className="font-mono text-[9px] text-zinc-500 uppercase">REAL ESTATE</span>
+            <span className="font-mono text-[9px] text-zinc-400 uppercase">REAL ESTATE</span>
             <span className="text-xs font-medium text-zinc-200">HomeFind</span>
             <span className="text-[10px] text-zinc-400">Dubai • Luxury</span>
           </div>
 
           <div className="bg-zinc-900/50 border border-zinc-850 rounded-lg p-3 flex flex-col gap-1">
-            <span className="font-mono text-[9px] text-zinc-500 uppercase">INSURANCE</span>
+            <span className="font-mono text-[9px] text-zinc-400 uppercase">INSURANCE</span>
             <span className="text-xs font-medium text-zinc-200">Insurance Advisory</span>
             <span className="text-[10px] text-zinc-400">Private Client</span>
           </div>
 
           <div className="bg-zinc-900/50 border border-zinc-850 rounded-lg p-3 flex flex-col gap-1">
-            <span className="font-mono text-[9px] text-zinc-500 uppercase">FINANCE</span>
+            <span className="font-mono text-[9px] text-zinc-400 uppercase">FINANCE</span>
             <span className="text-xs font-medium text-zinc-200">CV Finance</span>
             <span className="text-[10px] text-zinc-400">Subvenții / Capital</span>
           </div>
 
           <div className="bg-zinc-900/50 border border-zinc-850 rounded-lg p-3 flex flex-col gap-1">
-            <span className="font-mono text-[9px] text-zinc-500 uppercase">CONSTRUCTION</span>
+            <span className="font-mono text-[9px] text-zinc-400 uppercase">CONSTRUCTION</span>
             <span className="text-xs font-medium text-zinc-200">Constructions</span>
             <span className="text-[10px] text-zinc-400">Materials Intelligence</span>
           </div>
@@ -94,7 +94,7 @@ export const EcosystemMap: React.FC = () => {
 
         {/* Level 4: Intelligence Layer & Orbit Systems */}
         <div className="pt-4 border-t border-zinc-900 flex flex-col gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 text-center">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-400 text-center">
             OPERATING SYSTEM & ORBIT PLATFORMS
           </span>
           <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono">

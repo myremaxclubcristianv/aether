@@ -81,31 +81,31 @@ export default function FounderPage() {
       </main>
 
       {/* Editorial Footer */}
-      <footer className="border-t border-zinc-900 px-5 py-8 flex flex-col gap-6 text-zinc-500 text-xs">
+      <footer className="border-t border-zinc-900 px-5 py-8 flex flex-col gap-6 text-zinc-400 text-xs">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs tracking-[0.35em] text-white uppercase font-medium">
               CRISTIAN VĂDUVA
             </span>
-            <span className="text-zinc-700">•</span>
-            <span className="font-mono text-[10px] text-zinc-500">ECOSYSTEM ARCHITECT</span>
+            <span className="text-zinc-600">•</span>
+            <span className="font-mono text-[10px] text-zinc-400">ECOSYSTEM ARCHITECT</span>
           </div>
-          <p className="text-[11px] font-light text-zinc-500">
+          <p className="text-[11px] font-light text-zinc-400">
             Building businesses, platforms and systems designed to turn real-world action into real-world value.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
-          <Link href="/" className="hover:text-white transition-colors">AETHER Home</Link>
-          <Link href="/legal" className="hover:text-white transition-colors">Legal Center</Link>
-          <a href="#my-creations" className="hover:text-white transition-colors">Creations</a>
-          <a href="#why-aether" className="hover:text-white transition-colors">Why AETHER</a>
-          <a href="#work-with-me" className="hover:text-white transition-colors">Work With Me</a>
-          <a href="https://aixluxury.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">AiXLuxury</a>
-          <a href="https://os.aixluxury.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">AiX OS</a>
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-[11px] font-mono text-zinc-400">
+          <Link href="/" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">AETHER Home</Link>
+          <Link href="/legal" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Legal Center</Link>
+          <a href="#my-creations" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Creations</a>
+          <a href="#why-aether" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Why AETHER</a>
+          <a href="#work-with-me" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Work With Me</a>
+          <a href="https://aixluxury.com" target="_blank" rel="noopener noreferrer" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">AiXLuxury</a>
+          <a href="https://os.aixluxury.com" target="_blank" rel="noopener noreferrer" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">AiX OS</a>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-600">
+        <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-400">
           <span>© {new Date().getFullYear()} Cristian Văduva. All rights reserved.</span>
           <span className="inline-flex items-center gap-1.5 text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

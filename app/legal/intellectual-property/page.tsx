@@ -22,7 +22,7 @@ export default function IntellectualPropertyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           INTELLECTUAL PROPERTY & COMPLAINTS
         </h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-400">
           <span>{LEGAL_METADATA.version}</span>
           <span>•</span>
           <span>Last Updated: {LEGAL_METADATA.lastUpdated}</span>
@@ -113,7 +113,7 @@ export default function IntellectualPropertyPage() {
       </section>
 
       {/* 06. Operational & Legal Status Disclosure */}
-      <section className="flex flex-col gap-3 border-t border-zinc-900 pt-6 text-xs text-zinc-500 font-mono">
+      <section className="flex flex-col gap-3 border-t border-zinc-900 pt-6 text-xs text-zinc-400 font-mono">
         <span className="text-zinc-400 font-semibold uppercase tracking-wider">
           PLATFORM & OPERATOR DISCLOSURE
         </span>

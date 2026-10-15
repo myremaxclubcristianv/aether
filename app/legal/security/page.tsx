@@ -21,7 +21,7 @@ export default function SecurityPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           SECURITY & RESPONSIBLE DISCLOSURE
         </h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-400">
           <span>{LEGAL_METADATA.version}</span>
           <span>•</span>
           <span>Last Updated: {LEGAL_METADATA.lastUpdated}</span>
@@ -89,7 +89,7 @@ export default function SecurityPage() {
         <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 text-xs font-mono flex flex-col gap-1 mt-2">
           <span className="text-white font-semibold">Security Contact:</span>
           <span className="text-zinc-300">Email: <a href="mailto:cristianvaduva@duck.com" className="underline text-white">cristianvaduva@duck.com</a></span>
-          <span className="text-zinc-500">Subject: [SECURITY] Vulnerability Report — AETHER</span>
+          <span className="text-zinc-400">Subject: [SECURITY] Vulnerability Report — AETHER</span>
         </div>
       </section>
     </article>

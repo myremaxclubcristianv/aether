@@ -146,14 +146,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
               className={`flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-mono transition-all group select-none mt-2 pt-2 border-t border-zinc-900/80 ${
                 pathname === '/founder'
                   ? 'bg-zinc-900 text-white font-medium'
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-950/40'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-950/40'
               }`}
             >
               <div className="flex flex-col text-left">
                 <span className="font-semibold text-zinc-300 group-hover:text-white">FOUNDER</span>
-                <span className="text-[9px] text-zinc-600 group-hover:text-zinc-400">Cristian Văduva</span>
+                <span className="text-[9px] text-zinc-400 group-hover:text-zinc-300">Cristian Văduva</span>
               </div>
-              <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400">↗</span>
+              <span className="text-[10px] text-zinc-400 group-hover:text-zinc-300">↗</span>
             </Link>
 
             <Link
@@ -161,11 +161,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
               className={`flex items-center justify-between px-3.5 py-1.5 rounded-xl text-xs font-mono transition-all group select-none ${
                 pathname.startsWith('/legal')
                   ? 'bg-zinc-900 text-white font-medium'
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-950/40'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-950/40'
               }`}
             >
               <span>LEGAL & PRIVACY</span>
-              <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400">↗</span>
+              <span className="text-[10px] text-zinc-400 group-hover:text-zinc-300">↗</span>
             </Link>
           </nav>
         </div>
@@ -188,7 +188,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
                   <span className="text-xs font-medium text-white truncate group-hover:text-zinc-200">
                     @{userProfile.username}
                   </span>
-                  <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-500">
+                  <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400">
                     <span>Flex: {userProfile.flexScore || 0}</span>
                     {userProfile.streak > 0 && (
                       <>
@@ -207,7 +207,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2.5 px-3 py-2 text-xs font-mono text-zinc-500 hover:text-red-400 transition-colors rounded-lg hover:bg-zinc-950/40 w-full text-left"
+            className="flex items-center gap-2.5 px-3 py-2 text-xs font-mono text-zinc-400 hover:text-red-400 transition-colors rounded-lg hover:bg-zinc-950/40 w-full text-left"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -258,8 +258,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
         <div className="pointer-events-auto max-w-md mx-auto flex items-center justify-between bg-zinc-950/95 backdrop-blur-xl border border-zinc-850 py-1.5 px-2.5 rounded-full shadow-2xl">
           <Link
             href="/home"
-            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
-              pathname === '/home' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full min-h-[40px] justify-center transition-colors ${
+              pathname === '/home' ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <Home className="w-4 h-4" />
@@ -268,8 +268,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
           <Link
             href="/progress"
-            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
-              pathname.startsWith('/progress') ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full min-h-[40px] justify-center transition-colors ${
+              pathname.startsWith('/progress') ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
@@ -287,8 +287,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
           <Link
             href="/circle"
-            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
-              pathname.startsWith('/circle') ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full min-h-[40px] justify-center transition-colors ${
+              pathname.startsWith('/circle') ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -297,8 +297,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
 
           <Link
             href={profileHref}
-            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors ${
-              pathname === profileHref ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full min-h-[40px] justify-center transition-colors ${
+              pathname === profileHref ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <UserIcon className="w-4 h-4" />

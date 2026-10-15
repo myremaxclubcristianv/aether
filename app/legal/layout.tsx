@@ -18,7 +18,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline-block font-mono text-[10px] text-zinc-500 uppercase">
+          <span className="hidden sm:inline-block font-mono text-[10px] text-zinc-400 uppercase">
             {LEGAL_METADATA.version}
           </span>
           <Link
@@ -61,13 +61,13 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
       </main>
 
       {/* Legal Center Footer */}
-      <footer className="border-t border-zinc-900 px-5 sm:px-8 py-8 flex flex-col gap-6 text-zinc-500 text-xs">
+      <footer className="border-t border-zinc-900 px-5 sm:px-8 py-8 flex flex-col gap-6 text-zinc-400 text-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <span className="font-mono text-xs tracking-[0.35em] text-white uppercase font-medium">
               AETHER LEGAL CENTER
             </span>
-            <p className="text-[11px] font-light text-zinc-500">
+            <p className="text-[11px] font-light text-zinc-400">
               Transparency, privacy and governance standards for the AETHER social proof layer.
             </p>
           </div>
@@ -77,24 +77,24 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono text-zinc-400">
-          <Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="/legal/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-          <Link href="/legal/cookies" className="hover:text-white transition-colors">Cookie Policy</Link>
-          <Link href="/legal/community" className="hover:text-white transition-colors">Community Guidelines</Link>
-          <Link href="/legal/acceptable-use" className="hover:text-white transition-colors">Acceptable Use</Link>
-          <Link href="/legal/proof-policy" className="hover:text-white transition-colors">Proof Policy</Link>
-          <Link href="/legal/intellectual-property" className="hover:text-white transition-colors">Intellectual Property</Link>
-          <Link href="/legal/data-rights" className="hover:text-white transition-colors">Data Subject Rights</Link>
-          <Link href="/legal/delete-account" className="hover:text-white transition-colors">Account Deletion</Link>
-          <Link href="/legal/security" className="hover:text-white transition-colors">Security & Disclosure</Link>
-          <Link href="/founder" className="hover:text-white transition-colors">Founder Profile</Link>
-          <Link href="/" className="hover:text-white transition-colors">AETHER Home</Link>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-[11px] font-mono text-zinc-400">
+          <Link href="/legal/privacy" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/legal/terms" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/legal/cookies" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Cookie Policy</Link>
+          <Link href="/legal/community" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Community Guidelines</Link>
+          <Link href="/legal/acceptable-use" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Acceptable Use</Link>
+          <Link href="/legal/proof-policy" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Proof Policy</Link>
+          <Link href="/legal/intellectual-property" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Intellectual Property</Link>
+          <Link href="/legal/data-rights" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Data Subject Rights</Link>
+          <Link href="/legal/delete-account" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Account Deletion</Link>
+          <Link href="/legal/security" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Security & Disclosure</Link>
+          <Link href="/founder" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Founder Profile</Link>
+          <Link href="/" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">AETHER Home</Link>
         </div>
 
-        <div className="pt-4 border-t border-zinc-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-zinc-600">
+        <div className="pt-4 border-t border-zinc-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-zinc-400">
           <span>© {new Date().getFullYear()} AETHER. All rights reserved.</span>
-          <span>Inquiries: <a href="mailto:cristianvaduva@duck.com" className="text-zinc-400 hover:text-white underline">cristianvaduva@duck.com</a></span>
+          <span>Inquiries: <a href="mailto:cristianvaduva@duck.com" className="text-zinc-300 hover:text-white underline">cristianvaduva@duck.com</a></span>
         </div>
       </footer>
     </div>

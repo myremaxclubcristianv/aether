@@ -7,10 +7,10 @@ export const FounderProfile: React.FC = () => {
   return (
     <section className="py-12 border-b border-zinc-900 flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
           01 / THE FOUNDER
         </span>
-        <span className="font-mono text-[10px] text-zinc-600 uppercase">
+        <span className="font-mono text-[10px] text-zinc-400 uppercase">
           OPERATOR & ARCHITECT
         </span>
       </div>
@@ -25,7 +25,7 @@ export const FounderProfile: React.FC = () => {
           <p className="text-sm text-zinc-300 font-light leading-relaxed">
             {identity.statement}
           </p>
-          <p className="text-xs text-zinc-500 font-light leading-relaxed">
+          <p className="text-xs text-zinc-400 font-light leading-relaxed">
             {identity.regionContext}
           </p>
         </div>

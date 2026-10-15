@@ -5,7 +5,7 @@ export const FounderCta: React.FC = () => {
   return (
     <section className="py-16 flex flex-col items-center text-center gap-6">
       <div className="flex flex-col gap-2 max-w-md mx-auto">
-        <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-zinc-500">
+        <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-zinc-400">
           EXECUTION & ACTION
         </span>
         <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white uppercase">

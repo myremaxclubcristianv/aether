@@ -7,7 +7,7 @@ export const FounderSocials: React.FC = () => {
   return (
     <section className="py-12 border-b border-zinc-900 flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
           11 / CHANNELS
         </span>
         <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -28,7 +28,7 @@ export const FounderSocials: React.FC = () => {
               <span className="text-xs font-semibold text-white group-hover:text-zinc-200">
                 {social.platform}
               </span>
-              <span className="text-xs text-zinc-500 group-hover:text-white transition-colors">
+              <span className="text-xs text-zinc-400 group-hover:text-white transition-colors">
                 ↗
               </span>
             </div>
@@ -37,7 +37,7 @@ export const FounderSocials: React.FC = () => {
               <span className="text-[11px] font-mono text-zinc-300 truncate">
                 {social.handle}
               </span>
-              <span className="text-[9px] font-mono text-zinc-500">
+              <span className="text-[9px] font-mono text-zinc-400">
                 {social.category}
               </span>
             </div>

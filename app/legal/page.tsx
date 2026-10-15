@@ -29,7 +29,7 @@ export default function LegalHubPage() {
           Transparency, privacy and the rules behind AETHER.
         </p>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-xs font-mono text-zinc-500">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-xs font-mono text-zinc-400">
           <span>{LEGAL_METADATA.version}</span>
           <span>•</span>
           <span>Last Updated: {LEGAL_METADATA.lastUpdated}</span>
@@ -48,10 +48,10 @@ export default function LegalHubPage() {
           >
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   {doc.category}
                 </span>
-                <span className="text-xs text-zinc-500 group-hover:text-white transition-colors">
+                <span className="text-xs text-zinc-400 group-hover:text-white transition-colors">
                   ↗
                 </span>
               </div>
@@ -65,9 +65,9 @@ export default function LegalHubPage() {
               </p>
             </div>
 
-            <div className="pt-3 border-t border-zinc-900/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <div className="pt-3 border-t border-zinc-900/80 flex items-center justify-between text-[10px] font-mono text-zinc-400">
               <span>Read Document</span>
-              <span className="text-zinc-600">v{doc.version}</span>
+              <span className="text-zinc-400">v{doc.version}</span>
             </div>
           </Link>
         ))}

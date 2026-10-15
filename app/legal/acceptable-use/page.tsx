@@ -22,7 +22,7 @@ export default function AcceptableUsePolicyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           ACCEPTABLE USE POLICY
         </h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-400">
           <span>{LEGAL_METADATA.version}</span>
           <span>•</span>
           <span>Last Updated: {LEGAL_METADATA.lastUpdated}</span>

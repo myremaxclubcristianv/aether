@@ -249,7 +249,7 @@ function LoginForm() {
         <div className="flex flex-col items-center text-center">
           <Link
             href="/"
-            className="font-mono text-[10px] tracking-[0.4em] text-zinc-500 uppercase select-none hover:text-white transition-colors"
+            className="font-mono text-[10px] tracking-[0.4em] text-zinc-400 uppercase select-none hover:text-white transition-colors min-h-[24px] inline-flex items-center"
           >
             A E T H E R
           </Link>
@@ -259,7 +259,7 @@ function LoginForm() {
             {mode === 'forgot' && 'Reset your password'}
             {mode === 'verify_pending' && 'Verify your email'}
           </h1>
-          <p className="text-xs text-zinc-500 font-light mt-1.5 leading-relaxed">
+          <p className="text-xs text-zinc-400 font-light mt-1.5 leading-relaxed">
             {mode === 'login' && 'Enter your credentials to access your proofs and Flex Score.'}
             {mode === 'register' && 'Register your verified email to begin documenting your progress.'}
             {mode === 'forgot' && 'Enter your account email to receive a secure recovery link.'}
@@ -280,7 +280,7 @@ function LoginForm() {
                 <p className="text-xs text-zinc-400 font-light leading-relaxed">
                   Please check your inbox and click the verification link to activate your account.
                 </p>
-                <p className="text-[11px] text-zinc-500 font-light">
+                <p className="text-[11px] text-zinc-400 font-light">
                   If you don&apos;t see the email within a minute, check your spam or junk folder.
                 </p>
               </div>
@@ -319,7 +319,7 @@ function LoginForm() {
                     setError(null);
                     setSuccessMsg(null);
                   }}
-                  className="mt-2 text-[11px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="mt-2 text-[11px] font-mono text-zinc-400 hover:text-white transition-colors min-h-[24px] py-1 inline-flex items-center justify-center"
                 >
                   ← BACK TO LOG IN
                 </button>
@@ -359,7 +359,7 @@ function LoginForm() {
                 )}
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="forgot-email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                  <label htmlFor="forgot-email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                     Account Email
                   </label>
                   <input
@@ -390,7 +390,7 @@ function LoginForm() {
                     setError(null);
                     setSuccessMsg(null);
                   }}
-                  className="mt-2 text-center text-[11px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="mt-2 text-center text-[11px] font-mono text-zinc-400 hover:text-white transition-colors min-h-[24px] py-1 inline-flex items-center justify-center"
                 >
                   ← BACK TO LOG IN
                 </button>
@@ -426,7 +426,7 @@ function LoginForm() {
               )}
 
               <div className="flex flex-col gap-1">
-                <label htmlFor="email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                <label htmlFor="email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Email
                 </label>
                 <input
@@ -443,7 +443,7 @@ function LoginForm() {
 
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                  <label htmlFor="password" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                     Password
                   </label>
                   {mode === 'login' && (
@@ -454,7 +454,7 @@ function LoginForm() {
                         setError(null);
                         setSuccessMsg(null);
                       }}
-                      className="text-[10px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors"
+                      className="text-[10px] font-mono text-zinc-400 hover:text-white transition-colors min-h-[24px] py-1 inline-flex items-center"
                     >
                       Forgot password?
                     </button>
@@ -471,7 +471,7 @@ function LoginForm() {
                   disabled={loading}
                 />
                 {mode === 'register' && (
-                  <span className="text-[10px] font-mono text-zinc-500 mt-0.5">
+                  <span className="text-[10px] font-mono text-zinc-400 mt-0.5">
                     Requires 8+ characters, letters and numbers or symbols.
                   </span>
                 )}
@@ -500,19 +500,19 @@ function LoginForm() {
                 setSuccessMsg(null);
                 setShowResendAction(false);
               }}
-              className="text-[11px] font-mono tracking-wide text-zinc-500 hover:text-zinc-300 transition-colors underline decoration-zinc-800 underline-offset-4 uppercase"
+              className="text-[11px] font-mono tracking-wide text-zinc-400 hover:text-white transition-colors underline decoration-zinc-700 underline-offset-4 uppercase min-h-[24px] py-1 inline-flex items-center"
             >
               {mode === 'login'
                 ? "DON'T HAVE AN ACCOUNT? REGISTER"
                 : 'ALREADY REGISTERED? LOG IN'}
             </button>
 
-            <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-600">
-              <Link href="/legal/privacy" className="hover:text-zinc-400 transition-colors">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
+              <Link href="/legal/privacy" className="hover:text-white transition-colors min-h-[24px] py-1 inline-flex items-center">
                 Privacy Policy
               </Link>
               <span>•</span>
-              <Link href="/legal/terms" className="hover:text-zinc-400 transition-colors">
+              <Link href="/legal/terms" className="hover:text-white transition-colors min-h-[24px] py-1 inline-flex items-center">
                 Terms of Service
               </Link>
             </div>

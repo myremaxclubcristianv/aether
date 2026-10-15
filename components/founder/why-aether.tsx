@@ -26,7 +26,7 @@ export const WhyAether: React.FC = () => {
         </div>
 
         <div className="bg-zinc-950/80 border border-zinc-850 rounded-xl p-5 flex flex-col gap-2">
-          <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider">
+          <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
             REAL-WORLD ACTIONS THAT MATTER
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-zinc-300">
@@ -47,7 +47,7 @@ export const WhyAether: React.FC = () => {
       {/* 2. THE PROBLEM */}
       <section className="py-12 border-b border-zinc-900 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
             06 / THE FUNDAMENTAL PROBLEM
           </span>
           <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug">
@@ -80,7 +80,7 @@ export const WhyAether: React.FC = () => {
       {/* 3. WHAT AETHER DOES */}
       <section className="py-12 border-b border-zinc-900 flex flex-col gap-6">
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
             07 / THE ACTION ENGINE
           </span>
           <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -98,7 +98,7 @@ export const WhyAether: React.FC = () => {
               className="bg-zinc-950/80 border border-zinc-850 rounded-xl p-4 flex flex-col justify-between gap-3"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] text-zinc-500 font-bold">
+                <span className="font-mono text-[10px] text-zinc-400 font-bold">
                   0{idx + 1}
                 </span>
                 <span className="font-mono text-xs font-semibold text-white">
@@ -116,7 +116,7 @@ export const WhyAether: React.FC = () => {
       {/* 4. WHY IT MATTERS & 4 MAJOR BENEFITS */}
       <section className="py-12 border-b border-zinc-900 flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
             08 / VALUE & BENEFITS
           </span>
           <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
@@ -134,7 +134,7 @@ export const WhyAether: React.FC = () => {
               className="bg-zinc-950/70 border border-zinc-850 rounded-xl p-5 flex flex-col gap-2"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-zinc-500">{b.number}</span>
+                <span className="font-mono text-xs font-bold text-zinc-400">{b.number}</span>
                 <span className="font-mono text-xs font-semibold text-white uppercase tracking-wider">
                   {b.title}
                 </span>
@@ -156,7 +156,7 @@ export const WhyAether: React.FC = () => {
       {/* 5. WHY I BUILT AETHER (FOUNDER PERSPECTIVE) */}
       <section className="py-12 border-b border-zinc-900 flex flex-col gap-6">
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
             09 / FOUNDER PERSPECTIVE
           </span>
           <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -176,7 +176,7 @@ export const WhyAether: React.FC = () => {
             </p>
           ))}
 
-          <div className="pt-4 border-t border-zinc-900 flex items-center justify-between text-xs font-mono text-zinc-500">
+          <div className="pt-4 border-t border-zinc-900 flex items-center justify-between text-xs font-mono text-zinc-400">
             <span>Cristian Văduva</span>
             <span>Founder & Architect</span>
           </div>
@@ -214,7 +214,7 @@ export const WhyAether: React.FC = () => {
             <p className="text-xs text-zinc-300 font-light leading-relaxed">
               {manifesto.ecosystemConnection.body}
             </p>
-            <p className="text-xs text-zinc-500 font-light leading-relaxed">
+            <p className="text-xs text-zinc-400 font-light leading-relaxed">
               {manifesto.ecosystemConnection.contrast}
             </p>
           </div>

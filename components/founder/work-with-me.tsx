@@ -86,7 +86,7 @@ export const WorkWithMe: React.FC = () => {
   return (
     <section id="work-with-me" className="py-12 border-b border-zinc-900 flex flex-col gap-8 scroll-mt-12">
       <div className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
           10 / ENGAGEMENT
         </span>
         <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -103,7 +103,7 @@ export const WorkWithMe: React.FC = () => {
           href={contact.phone.url}
           className="bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-850 hover:border-zinc-700 rounded-xl p-3 flex flex-col gap-1 transition-all group"
         >
-          <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-500">PHONE</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-400">PHONE</span>
           <span className="text-xs font-semibold text-white group-hover:text-zinc-200">CALL DIRECT</span>
           <span className="text-[10px] font-mono text-zinc-400 truncate">{contact.phone.display}</span>
         </a>
@@ -123,7 +123,7 @@ export const WorkWithMe: React.FC = () => {
           href={contact.email.url}
           className="bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-850 hover:border-zinc-700 rounded-xl p-3 flex flex-col gap-1 transition-all group"
         >
-          <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-500">EMAIL</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-400">EMAIL</span>
           <span className="text-xs font-semibold text-white group-hover:text-zinc-200">SEND INQUIRY</span>
           <span className="text-[10px] font-mono text-zinc-400 truncate">{contact.email.display}</span>
         </a>
@@ -163,43 +163,46 @@ export const WorkWithMe: React.FC = () => {
             {/* Name, Email, Phone Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="inquiry-name" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Full Name *
                 </label>
                 <input
+                  id="inquiry-name"
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Your Name"
-                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="inquiry-email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Email Address *
                 </label>
                 <input
+                  id="inquiry-email"
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="name@example.com"
-                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="inquiry-phone" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Phone / WhatsApp
                 </label>
                 <input
+                  id="inquiry-phone"
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+40 / +43..."
-                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                 />
               </div>
             </div>
@@ -232,15 +235,16 @@ export const WorkWithMe: React.FC = () => {
 
             {/* Message Area */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+              <label htmlFor="inquiry-message" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                 Tell me more
               </label>
               <textarea
+                id="inquiry-message"
                 rows={4}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 placeholder="Describe your project, asset, requirement or partnership objective..."
-                className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-500 transition-colors resize-none"
+                className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500 transition-colors resize-none"
               />
             </div>
 
@@ -281,7 +285,7 @@ export const WorkWithMe: React.FC = () => {
                 >
                   {status === 'submitting' ? 'Transmitting...' : 'Start A Conversation'}
                 </button>
-                <p className="text-[10px] text-zinc-500 font-light text-right">
+                <p className="text-[10px] text-zinc-400 font-light text-right">
                   Information is processed to respond to your request per our{' '}
                   <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline">
                     Privacy Policy

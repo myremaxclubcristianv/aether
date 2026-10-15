@@ -7,7 +7,7 @@ export const WhatIDo: React.FC = () => {
   return (
     <section className="py-12 border-b border-zinc-900 flex flex-col gap-8">
       <div className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-500 uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
           02 / ADVISORY & SYSTEMS
         </span>
         <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
@@ -26,7 +26,7 @@ export const WhatIDo: React.FC = () => {
                 <h3 className="font-mono text-xs sm:text-sm font-semibold tracking-wider text-white uppercase">
                   {item.title}
                 </h3>
-                <span className="text-[10px] font-mono text-zinc-500">
+                <span className="text-[10px] font-mono text-zinc-400">
                   {item.platforms.length} PLATFORMS
                 </span>
               </div>
@@ -37,7 +37,7 @@ export const WhatIDo: React.FC = () => {
 
               {/* Core Services List */}
               <div className="flex flex-col gap-1.5 pt-2">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-500">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-400">
                   Core Capabilities
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -73,9 +73,9 @@ export const WhatIDo: React.FC = () => {
             </div>
 
             {/* Platforms row */}
-            <div className="pt-3 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-              <span className="text-zinc-600">Ecosystem platforms:</span>
-              <span className="text-zinc-400 text-right truncate max-w-[200px]">
+            <div className="pt-3 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+              <span className="text-zinc-400">Ecosystem platforms:</span>
+              <span className="text-zinc-300 text-right truncate max-w-[200px]">
                 {item.platforms.join(' • ')}
               </span>
             </div>

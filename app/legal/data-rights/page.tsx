@@ -99,7 +99,7 @@ export default function DataRightsPage() {
                 {item.label}
               </span>
             </div>
-            <span className="font-mono text-[10px] text-zinc-500">
+            <span className="font-mono text-[10px] text-zinc-400">
               {selectedType === item.id ? '✓ Selected' : 'Select Right →'}
             </span>
           </div>
@@ -138,61 +138,65 @@ export default function DataRightsPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="rights-name" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Full Name
                 </label>
                 <input
+                  id="rights-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your Name"
-                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-600"
+                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="rights-email" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   Email Address *
                 </label>
                 <input
+                  id="rights-email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-600"
+                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                <label htmlFor="rights-username" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   AETHER Username (optional)
                 </label>
                 <input
+                  id="rights-username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="@username"
-                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-600"
+                  className="h-10 px-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+              <label htmlFor="rights-details" className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                 Request Details & Specifications
               </label>
               <textarea
+                id="rights-details"
                 rows={3}
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Specify details to help us locate and process your request quickly..."
-                className="p-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-zinc-600 resize-none"
+                className="p-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-white placeholder:text-zinc-500 text-xs focus:outline-none focus:border-zinc-500 resize-none"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-zinc-900">
-              <span className="text-[11px] text-zinc-500 font-light">
+              <span className="text-[11px] text-zinc-400 font-light">
                 Statutory response timeframe: 30 days pursuant to GDPR Art. 12(3).
               </span>
 

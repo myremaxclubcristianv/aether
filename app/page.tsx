@@ -106,7 +106,7 @@ export default async function RootPage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-white">@alex</span>
-                  <span className="text-[10px] font-mono text-zinc-500">Fitness • 2h ago</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Fitness • 2h ago</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800">
@@ -119,8 +119,8 @@ export default async function RootPage() {
             </p>
 
             <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-500">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                 <span>Verified Image Proof</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
@@ -137,7 +137,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section className="py-14 border-b border-zinc-900 flex flex-col gap-6">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               01 • PHILOSOPHY
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -151,11 +151,11 @@ export default async function RootPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
             <div className="p-4 rounded-xl bg-zinc-950/40 border border-zinc-900 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">Traditional Social</span>
-                <span className="text-xs text-zinc-600">✕</span>
+                <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400">Traditional Social</span>
+                <span className="text-xs text-zinc-400">✕</span>
               </div>
               <h3 className="text-sm font-medium text-zinc-300">The Post</h3>
-              <p className="text-xs text-zinc-500 font-light leading-relaxed">
+              <p className="text-xs text-zinc-400 font-light leading-relaxed">
                 Something published for external validation. Crafted for the algorithm, staged for appearance, forgotten by tomorrow.
               </p>
             </div>
@@ -178,7 +178,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="proofs" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               02 • THE UNIT OF ACTION
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -200,13 +200,13 @@ export default async function RootPage() {
             ].map((item, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-900 flex flex-col gap-1">
                 <span className="text-xs font-medium text-white">{item.cat}</span>
-                <span className="text-[10px] text-zinc-500 font-light leading-normal">{item.desc}</span>
+                <span className="text-[10px] text-zinc-400 font-light leading-normal">{item.desc}</span>
               </div>
             ))}
           </div>
 
           <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-900 flex flex-col gap-2">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Proof Architecture</h4>
+            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Proof Architecture</h3>
             <ul className="text-xs text-zinc-400 font-light space-y-1.5">
               <li>• <strong className="text-white font-normal">Category tag:</strong> Specifies the domain of effort.</li>
               <li>• <strong className="text-white font-normal">Concise caption:</strong> Describes what was accomplished.</li>
@@ -221,7 +221,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="flex-score" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               03 • MEASURABLE MOMENTUM
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -236,8 +236,8 @@ export default async function RootPage() {
             <div className="p-5 rounded-xl bg-zinc-950/50 border border-zinc-900 flex flex-col justify-between">
               <div>
                 <span className="text-2xl font-bold font-mono text-white">+10</span>
-                <h4 className="text-xs font-medium text-zinc-300 mt-1">Standard Proof</h4>
-                <p className="text-[11px] text-zinc-500 font-light mt-1 leading-relaxed">
+                <h3 className="text-xs font-medium text-zinc-300 mt-1">Standard Proof</h3>
+                <p className="text-[11px] text-zinc-400 font-light mt-1 leading-relaxed">
                   Awarded for logging a verified action with category and description.
                 </p>
               </div>
@@ -246,8 +246,8 @@ export default async function RootPage() {
             <div className="p-5 rounded-xl bg-zinc-950/50 border border-zinc-900 flex flex-col justify-between">
               <div>
                 <span className="text-2xl font-bold font-mono text-emerald-400">+15</span>
-                <h4 className="text-xs font-medium text-zinc-300 mt-1">Visual Proof</h4>
-                <p className="text-[11px] text-zinc-500 font-light mt-1 leading-relaxed">
+                <h3 className="text-xs font-medium text-zinc-300 mt-1">Visual Proof</h3>
+                <p className="text-[11px] text-zinc-400 font-light mt-1 leading-relaxed">
                   Awarded when a supporting photo or screenshot is attached.
                 </p>
               </div>
@@ -272,7 +272,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="circle" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               04 • SOCIAL LAYER
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -291,10 +291,10 @@ export default async function RootPage() {
               { title: 'Public Profiles', desc: 'Share your public @username proof profile with anyone on the web.' },
             ].map((feat, idx) => (
               <div key={idx} className="p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-900 flex items-start gap-3">
-                <span className="font-mono text-xs text-zinc-500 mt-0.5">0{idx + 1}</span>
+                <span className="font-mono text-xs text-zinc-400 mt-0.5">0{idx + 1}</span>
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-zinc-200">{feat.title}</span>
-                  <span className="text-[11px] text-zinc-500 font-light mt-0.5">{feat.desc}</span>
+                  <span className="text-[11px] text-zinc-400 font-light mt-0.5">{feat.desc}</span>
                 </div>
               </div>
             ))}
@@ -306,7 +306,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="how-it-works" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               05 • GETTING STARTED
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -338,7 +338,7 @@ export default async function RootPage() {
               },
             ].map((s, idx) => (
               <div key={idx} className="p-4 rounded-xl bg-zinc-950/50 border border-zinc-900 flex flex-col gap-1.5">
-                <span className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">{s.step} — {s.title}</span>
+                <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase">{s.step} — {s.title}</span>
                 <p className="text-xs text-zinc-400 font-light leading-relaxed">{s.desc}</p>
               </div>
             ))}
@@ -349,7 +349,7 @@ export default async function RootPage() {
             7. EDITORIAL MANIFESTO
            ========================================================================= */}
         <section className="py-14 border-b border-zinc-900 flex flex-col gap-4 text-center items-center">
-          <span className="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase">
+          <span className="font-mono text-[10px] tracking-[0.3em] text-zinc-400 uppercase">
             AETHER MANIFESTO
           </span>
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white max-w-sm leading-tight">
@@ -365,7 +365,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="security" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               06 • ARCHITECTURE
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -385,7 +385,7 @@ export default async function RootPage() {
             ].map((sec, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-900 flex flex-col gap-1">
                 <span className="text-xs font-medium text-white">{sec.name}</span>
-                <span className="text-[10px] text-zinc-500 font-light leading-normal">{sec.desc}</span>
+                <span className="text-[10px] text-zinc-400 font-light leading-normal">{sec.desc}</span>
               </div>
             ))}
           </div>
@@ -396,7 +396,7 @@ export default async function RootPage() {
            ========================================================================= */}
         <section id="faq" className="py-14 border-b border-zinc-900 flex flex-col gap-6 scroll-mt-14">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-400 block mb-2">
               07 • FREQUENTLY ASKED QUESTIONS
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
@@ -466,9 +466,9 @@ export default async function RootPage() {
                   <span className="font-mono text-[11px] font-semibold text-white tracking-wider group-hover:text-emerald-400 transition-colors">
                     {p.name}
                   </span>
-                  <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400 transition-colors">↗</span>
+                  <span className="text-[10px] text-zinc-400 group-hover:text-white transition-colors">↗</span>
                 </div>
-                <span className="text-[10px] text-zinc-500 font-light mt-1 truncate">
+                <span className="text-[10px] text-zinc-400 font-light mt-1 truncate">
                   {p.desc}
                 </span>
               </a>
@@ -478,7 +478,7 @@ export default async function RootPage() {
           <div className="flex items-center justify-between pt-2">
             <Link
               href="/founder"
-              className="text-[11px] font-mono tracking-wider text-white hover:text-zinc-300 transition-colors inline-flex items-center gap-1.5"
+              className="text-[11px] font-mono tracking-wider text-white hover:text-zinc-300 transition-colors inline-flex items-center gap-1.5 min-h-[36px] py-1"
             >
               <span>Explore Founder Archive & Manifesto</span>
               <span>→</span>
@@ -488,7 +488,7 @@ export default async function RootPage() {
       </main>
 
       {/* Product Footer */}
-      <footer className="border-t border-zinc-900 px-5 py-8 flex flex-col gap-6 text-zinc-500 text-xs">
+      <footer className="border-t border-zinc-900 px-5 py-8 flex flex-col gap-6 text-zinc-400 text-xs">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-xs tracking-[0.35em] text-white uppercase font-medium">
@@ -497,39 +497,39 @@ export default async function RootPage() {
             <p className="text-[11px] font-light text-zinc-400">
               The Instagram for what you actually achieve.
             </p>
-            <p className="text-[10px] font-mono text-zinc-500">
+            <p className="text-[10px] font-mono text-zinc-400">
               Founded & architected by Cristian Văduva.
             </p>
           </div>
 
-          <div className="flex flex-col gap-1 text-[11px] font-mono text-zinc-400">
-            <span className="text-[10px] text-zinc-600 uppercase tracking-wider">Direct Channels</span>
-            <a href="mailto:cristianvaduva@duck.com" className="hover:text-white transition-colors">
+          <div className="flex flex-col gap-1.5 text-[11px] font-mono text-zinc-400">
+            <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Direct Channels</span>
+            <a href="mailto:cristianvaduva@duck.com" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">
               cristianvaduva@duck.com
             </a>
-            <a href="https://wa.me/436509536345" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+            <a href="https://wa.me/436509536345" target="_blank" rel="noopener noreferrer" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">
               WhatsApp: +43 650 953 6345
             </a>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
-          <Link href="/founder" className="text-white hover:text-zinc-300 font-medium transition-colors">Founder</Link>
-          <Link href="/legal" className="text-zinc-300 hover:text-white transition-colors">Legal Center</Link>
-          <Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          <Link href="/legal/terms" className="hover:text-white transition-colors">Terms</Link>
-          <Link href="/legal/intellectual-property" className="hover:text-white transition-colors">IP & Copyright</Link>
-          <Link href="/legal/community" className="hover:text-white transition-colors">Community</Link>
-          <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
-          <Link href="/login" className="hover:text-white transition-colors">Get Started</Link>
-          <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
-          <a href="#proofs" className="hover:text-white transition-colors">Proofs</a>
-          <a href="#flex-score" className="hover:text-white transition-colors">Flex Score</a>
-          <a href="#circle" className="hover:text-white transition-colors">Circle</a>
-          <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-[11px] font-mono text-zinc-400">
+          <Link href="/founder" className="min-h-[24px] inline-flex items-center text-white hover:text-zinc-300 font-medium transition-colors">Founder</Link>
+          <Link href="/legal" className="min-h-[24px] inline-flex items-center text-zinc-300 hover:text-white transition-colors">Legal Center</Link>
+          <Link href="/legal/privacy" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Privacy</Link>
+          <Link href="/legal/terms" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Terms</Link>
+          <Link href="/legal/intellectual-property" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">IP & Copyright</Link>
+          <Link href="/legal/community" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Community</Link>
+          <Link href="/login" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Log In</Link>
+          <Link href="/login" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Get Started</Link>
+          <a href="#how-it-works" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">How It Works</a>
+          <a href="#proofs" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Proofs</a>
+          <a href="#flex-score" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Flex Score</a>
+          <a href="#circle" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">Circle</a>
+          <a href="#faq" className="min-h-[24px] inline-flex items-center hover:text-white transition-colors">FAQ</a>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-600">
+        <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-400">
           <span>© {new Date().getFullYear()} AETHER. All rights reserved.</span>
           <span className="inline-flex items-center gap-1.5 text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
