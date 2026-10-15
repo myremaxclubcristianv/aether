@@ -1,12 +1,26 @@
 import type { NextConfig } from "next";
 
+// Extract configured Supabase project host, if present
+const configuredSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+let configuredOrigin = '';
+let configuredWsOrigin = '';
+if (configuredSupabaseUrl) {
+  try {
+    const parsed = new URL(configuredSupabaseUrl);
+    configuredOrigin = parsed.origin;
+    configuredWsOrigin = parsed.origin.replace(/^http/, 'ws');
+  } catch {
+    // fallback
+  }
+}
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://mhutcducgquzcbrzvbwj.supabase.co;
+  img-src 'self' blob: data: https://*.supabase.co ${configuredOrigin};
   font-src 'self' data:;
-  connect-src 'self' https://mhutcducgquzcbrzvbwj.supabase.co wss://mhutcducgquzcbrzvbwj.supabase.co;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co ${configuredOrigin} ${configuredWsOrigin};
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';

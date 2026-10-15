@@ -71,7 +71,10 @@ function LoginForm() {
       setResendCooldown(60);
     } catch (err) {
       const rawMsg = err instanceof Error ? err.message : 'Failed to resend verification email.';
-      if (rawMsg.toLowerCase().includes('rate limit') || rawMsg.toLowerCase().includes('over_email_send_rate_limit')) {
+      const lower = rawMsg.toLowerCase();
+      if (rawMsg.includes('Failed to fetch') || rawMsg.includes('Load failed') || rawMsg.includes('NetworkError') || lower.includes('networkerror')) {
+        setError('Unable to connect to authentication service. Please check your network connection.');
+      } else if (lower.includes('rate limit') || lower.includes('over_email_send_rate_limit')) {
         setError('Rate limit reached. Please wait a minute before requesting another verification email.');
       } else {
         setError(rawMsg);
@@ -213,7 +216,13 @@ function LoginForm() {
       const rawMsg = err instanceof Error ? err.message : 'An authentication error occurred.';
       const lower = rawMsg.toLowerCase();
 
-      if (rawMsg.includes('Failed to fetch') || rawMsg.includes('Load failed')) {
+      if (
+        rawMsg.includes('Failed to fetch') ||
+        rawMsg.includes('Load failed') ||
+        rawMsg.includes('NetworkError') ||
+        lower.includes('networkerror') ||
+        lower.includes('network error')
+      ) {
         setError('Unable to connect to authentication service. Please check your network connection.');
       } else if (lower.includes('email not confirmed') || lower.includes('email_not_confirmed')) {
         setError('Your email has not been verified yet. Please check your inbox or resend the verification link.');

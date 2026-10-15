@@ -80,7 +80,18 @@ export default function ResetPasswordPage() {
     } catch (err) {
       console.error('[PASSWORD RESET ERROR]', err);
       const rawMsg = err instanceof Error ? err.message : 'Failed to update password.';
-      setError(rawMsg);
+      const lower = rawMsg.toLowerCase();
+      if (
+        rawMsg.includes('Failed to fetch') ||
+        rawMsg.includes('Load failed') ||
+        rawMsg.includes('NetworkError') ||
+        lower.includes('networkerror') ||
+        lower.includes('network error')
+      ) {
+        setError('Unable to connect to authentication service. Please check your network connection.');
+      } else {
+        setError(rawMsg);
+      }
     } finally {
       setLoading(false);
     }
