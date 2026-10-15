@@ -5,6 +5,9 @@ import { LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Cookie Policy | AETHER Legal Center',
   description: 'How AETHER uses essential cookies, authentication tokens and client-side storage technologies.',
+  alternates: {
+    canonical: '/legal/cookies',
+  },
 };
 
 export default function CookiePolicyPage() {

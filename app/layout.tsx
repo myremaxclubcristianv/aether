@@ -10,23 +10,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aether-sable-delta.vercel.app'),
-  title: 'Aether — The Instagram for What You Actually Achieve',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aether.cristianvaduva.com'),
+  title: {
+    default: 'AETHER — The Instagram for What You Actually Achieve',
+    template: '%s | AETHER',
+  },
   description: "Your life isn't a feed. It's what you do. Track real progress, turn actions into Proofs, build your Flex Score, and see what your Circle is accomplishing.",
-  keywords: ['Aether', 'Proofs', 'Flex Score', 'Achievements', 'Social Network', 'Discipline', 'Productivity', 'Habits'],
-  authors: [{ name: 'Aether' }],
+  keywords: ['AETHER', 'Proofs', 'Flex Score', 'Achievements', 'Social Network', 'Discipline', 'Productivity', 'Habits'],
+  authors: [{ name: 'AETHER', url: 'https://aether.cristianvaduva.com' }],
   openGraph: {
-    title: 'Aether — The Instagram for What You Actually Achieve',
-    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
-    url: 'https://aether-sable-delta.vercel.app',
-    siteName: 'Aether',
+    title: 'AETHER — The Instagram for What You Actually Achieve',
+    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is accomplishing.',
+    url: 'https://aether.cristianvaduva.com',
+    siteName: 'AETHER',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Aether — The Instagram for What You Actually Achieve',
-    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
+    title: 'AETHER — The Instagram for What You Actually Achieve',
+    description: 'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is accomplishing.',
   },
   robots: {
     index: true,

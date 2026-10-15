@@ -89,11 +89,11 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           <Link href="/legal/delete-account" className="hover:text-white transition-colors">Account Deletion</Link>
           <Link href="/legal/security" className="hover:text-white transition-colors">Security & Disclosure</Link>
           <Link href="/founder" className="hover:text-white transition-colors">Founder Profile</Link>
-          <Link href="/" className="hover:text-white transition-colors">Aether Home</Link>
+          <Link href="/" className="hover:text-white transition-colors">AETHER Home</Link>
         </div>
 
         <div className="pt-4 border-t border-zinc-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-zinc-600">
-          <span>© {new Date().getFullYear()} Aether. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} AETHER. All rights reserved.</span>
           <span>Inquiries: <a href="mailto:cristianvaduva@duck.com" className="text-zinc-400 hover:text-white underline">cristianvaduva@duck.com</a></span>
         </div>
       </footer>

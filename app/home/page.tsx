@@ -9,8 +9,12 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Home • Aether',
-  description: 'Your progress and circle activity on Aether.',
+  title: 'Home • AETHER',
+  description: 'Your progress and circle activity on AETHER.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function HomePage() {

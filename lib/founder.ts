@@ -216,7 +216,7 @@ export const FOUNDER_DATA = {
       description:
         'A social identity and proof platform built around action, evidence, progress and reputation.',
       role: 'Founder & Architect',
-      url: 'https://aether-sable-delta.vercel.app',
+      url: 'https://aether.cristianvaduva.com',
       status: 'LIVE',
       highlight: true,
       features: ['Proof Submissions', 'Flex Score Engine', 'Streak Tracking', 'Circle Social Graph'],

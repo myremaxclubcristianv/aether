@@ -5,6 +5,9 @@ import { LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Security & Responsible Disclosure | AETHER Legal Center',
   description: 'AETHER security controls, architecture, defense layers and responsible vulnerability disclosure policy.',
+  alternates: {
+    canonical: '/legal/security',
+  },
 };
 
 export default function SecurityPage() {

@@ -9,8 +9,12 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Log Proof • Aether',
+  title: 'Log Proof • AETHER',
   description: 'Document what you actually accomplished.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function ProofPage() {

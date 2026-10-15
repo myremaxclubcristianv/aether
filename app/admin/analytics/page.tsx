@@ -21,8 +21,12 @@ import {
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Product Analytics • Aether Admin',
+  title: 'Product Analytics • AETHER Admin',
   description: 'Deterministic behavior intelligence and activation funnel telemetry.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 interface PageProps {

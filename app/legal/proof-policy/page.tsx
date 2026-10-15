@@ -6,6 +6,9 @@ import { LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Content & Proof Policy | AETHER Legal Center',
   description: 'Rules regarding user-submitted Proofs, media rights, evidence standards and legal definitions.',
+  alternates: {
+    canonical: '/legal/proof-policy',
+  },
 };
 
 export default function ProofPolicyPage() {

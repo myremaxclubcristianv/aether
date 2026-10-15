@@ -6,6 +6,9 @@ import { LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Terms of Service | AETHER Legal Center',
   description: 'The contractual terms and rules governing access to and use of the AETHER platform.',
+  alternates: {
+    canonical: '/legal/terms',
+  },
 };
 
 export default function TermsOfServicePage() {

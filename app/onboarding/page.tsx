@@ -235,7 +235,7 @@ export default function OnboardingPage() {
               SETUP COMPLETE
             </span>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-              Welcome to Aether
+              Welcome to AETHER
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
               Show what you actually do. Actions speak louder than curated appearances.
@@ -260,7 +260,7 @@ export default function OnboardingPage() {
               }}
               className="w-full h-11 rounded-full bg-zinc-950 border border-zinc-850 hover:border-zinc-700 text-zinc-400 hover:text-white font-mono text-xs tracking-wider uppercase transition-colors"
             >
-              Explore Aether
+              Explore AETHER
             </button>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function OnboardingPage() {
             Configure Your Identity
           </h2>
           <p className="text-xs text-zinc-400 font-light mt-1 max-w-xs leading-relaxed">
-            Aether is where what you actually do becomes visible.
+            AETHER is where what you actually do becomes visible.
           </p>
         </div>
 

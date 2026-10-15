@@ -6,8 +6,27 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Aether — The Instagram for What You Actually Achieve',
-  description: "Your life isn't a feed. It's what you do. Track real progress. Turn actions into Proofs. Build your Flex Score. See what your Circle is actually accomplishing.",
+  title: 'AETHER — The Instagram for What You Actually Achieve',
+  description:
+    "Your life isn't a feed. It's what you do. Track real progress. Turn actions into Proofs. Build your Flex Score. See what your Circle is actually accomplishing.",
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'AETHER — The Instagram for What You Actually Achieve',
+    description:
+      'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
+    url: '/',
+    siteName: 'AETHER',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AETHER — The Instagram for What You Actually Achieve',
+    description:
+      'Track real progress, turn actions into Proofs, build your Flex Score, and discover what your Circle is actually accomplishing.',
+  },
 };
 
 export default async function RootPage() {
@@ -125,7 +144,7 @@ export default async function RootPage() {
               Social media became very good at showing what people want to be seen doing.
             </h2>
             <p className="text-xs text-zinc-400 font-light mt-2 leading-relaxed">
-              Aether is built around what you <strong className="text-white font-normal">actually do</strong>. Less performance, more proof.
+              AETHER is built around what you <strong className="text-white font-normal">actually do</strong>. Less performance, more proof.
             </p>
           </div>
 
@@ -143,7 +162,7 @@ export default async function RootPage() {
 
             <div className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-800 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400">Aether System</span>
+                <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400">AETHER System</span>
                 <span className="text-xs text-emerald-400">✓</span>
               </div>
               <h3 className="text-sm font-medium text-white">The Proof</h3>
@@ -337,7 +356,7 @@ export default async function RootPage() {
             You don&apos;t need another place to pretend.
           </h2>
           <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-sm text-center">
-            You need a place to remember what you actually did. The gym session. The course you finished. The thing you built. The skill you learned. The project you shipped. Aether turns those moments into something tangible.
+            You need a place to remember what you actually did. The gym session. The course you finished. The thing you built. The skill you learned. The project you shipped. AETHER turns those moments into something tangible.
           </p>
         </section>
 
@@ -353,7 +372,7 @@ export default async function RootPage() {
               Secure by design.
             </h2>
             <p className="text-xs text-zinc-400 font-light mt-2 leading-relaxed">
-              Aether is built with industry-standard privacy and security controls:
+              AETHER is built with industry-standard privacy and security controls:
             </p>
           </div>
 
@@ -381,7 +400,7 @@ export default async function RootPage() {
               07 • FREQUENTLY ASKED QUESTIONS
             </span>
             <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
-              Everything you need to know about Aether.
+              Everything you need to know about AETHER.
             </h2>
           </div>
 
@@ -396,7 +415,7 @@ export default async function RootPage() {
             Start documenting what you do.
           </h2>
           <p className="text-xs text-zinc-400 font-light max-w-xs leading-relaxed">
-            Create your account in seconds. Zero email confirmation friction. Start logging your proofs today.
+            Create your account in seconds. Verify your email and start documenting your proofs today.
           </p>
           <Link
             href="/login"
@@ -405,17 +424,93 @@ export default async function RootPage() {
             Create Your Account
           </Link>
         </section>
+
+        {/* =========================================================================
+            11. AIX ECOSYSTEM & FOUNDER
+           ========================================================================= */}
+        <section className="py-14 border-t border-zinc-900 flex flex-col gap-6 scroll-mt-14">
+          <div className="flex flex-col gap-1.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-zinc-900/60 border border-zinc-800 text-[10px] font-mono text-zinc-400 w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+              <span>AIX ECOSYSTEM</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white leading-snug">
+              Built by Cristian Văduva.
+            </h2>
+            <p className="text-xs text-zinc-400 font-light leading-relaxed">
+              AETHER is the social proof and identity layer of a multi-vertical builder ecosystem across real estate, protection, finance, media and intelligence.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 text-xs">
+            {[
+              { name: 'HOME FIND', desc: 'Real Estate Intelligence', url: 'https://homefind.cristianvaduva.com' },
+              { name: 'INSURANCE', desc: 'Asset Protection & Risk', url: 'https://insurance.cristianvaduva.com' },
+              { name: 'CV FINANCE', desc: 'Credit & Structured Finance', url: 'https://credite.cristianvaduva.com' },
+              { name: 'AiX MEDIA', desc: 'Media & Digital Growth', url: 'https://aixmedia.cristianvaduva.com' },
+              { name: 'AiXLuxury', desc: 'Luxury Real Estate & Assets', url: 'https://aixluxury.com' },
+              { name: 'AiX OS', desc: 'Operating System Hub', url: 'https://os.aixluxury.com' },
+              { name: 'FLY', desc: 'Aviation Platform', url: 'https://fly.cristianvaduva.com' },
+              { name: 'DUBAI', desc: 'Dubai Property Intelligence', url: 'https://dubai.cristianvaduva.com' },
+              { name: 'CONSTRUCTIONS', desc: 'Material Intelligence', url: 'https://constructions.cristianvaduva.com' },
+              { name: 'SUBVENȚII', desc: 'Funding Intelligence', url: 'https://subventii.ro' },
+            ].map((p) => (
+              <a
+                key={p.name}
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-900 hover:border-zinc-750 hover:bg-zinc-900/40 transition-all flex flex-col justify-between group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[11px] font-semibold text-white tracking-wider group-hover:text-emerald-400 transition-colors">
+                    {p.name}
+                  </span>
+                  <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400 transition-colors">↗</span>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-light mt-1 truncate">
+                  {p.desc}
+                </span>
+              </a>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <Link
+              href="/founder"
+              className="text-[11px] font-mono tracking-wider text-white hover:text-zinc-300 transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Explore Founder Archive & Manifesto</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </section>
       </main>
 
       {/* Product Footer */}
       <footer className="border-t border-zinc-900 px-5 py-8 flex flex-col gap-6 text-zinc-500 text-xs">
-        <div className="flex flex-col gap-2">
-          <span className="font-mono text-xs tracking-[0.35em] text-white uppercase font-medium">
-            AETHER
-          </span>
-          <p className="text-[11px] font-light text-zinc-500">
-            The Instagram for what you actually achieve.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            <span className="font-mono text-xs tracking-[0.35em] text-white uppercase font-medium">
+              AETHER
+            </span>
+            <p className="text-[11px] font-light text-zinc-400">
+              The Instagram for what you actually achieve.
+            </p>
+            <p className="text-[10px] font-mono text-zinc-500">
+              Founded & architected by Cristian Văduva.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-1 text-[11px] font-mono text-zinc-400">
+            <span className="text-[10px] text-zinc-600 uppercase tracking-wider">Direct Channels</span>
+            <a href="mailto:cristianvaduva@duck.com" className="hover:text-white transition-colors">
+              cristianvaduva@duck.com
+            </a>
+            <a href="https://wa.me/436509536345" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              WhatsApp: +43 650 953 6345
+            </a>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
@@ -423,6 +518,8 @@ export default async function RootPage() {
           <Link href="/legal" className="text-zinc-300 hover:text-white transition-colors">Legal Center</Link>
           <Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy</Link>
           <Link href="/legal/terms" className="hover:text-white transition-colors">Terms</Link>
+          <Link href="/legal/intellectual-property" className="hover:text-white transition-colors">IP & Copyright</Link>
+          <Link href="/legal/community" className="hover:text-white transition-colors">Community</Link>
           <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
           <Link href="/login" className="hover:text-white transition-colors">Get Started</Link>
           <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
@@ -433,7 +530,7 @@ export default async function RootPage() {
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-zinc-900/80 text-[10px] font-mono text-zinc-600">
-          <span>© {new Date().getFullYear()} Aether. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} AETHER. All rights reserved.</span>
           <span className="inline-flex items-center gap-1.5 text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>System Live</span>

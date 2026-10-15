@@ -15,7 +15,10 @@ export const FounderHero: React.FC = () => {
         <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white uppercase font-sans">
           {identity.name}
         </h1>
-        <p className="font-mono text-xs sm:text-sm tracking-[0.25em] text-zinc-400 uppercase font-medium">
+        <p className="font-mono text-xs sm:text-sm tracking-[0.25em] text-zinc-200 uppercase font-semibold">
+          Founder of AETHER
+        </p>
+        <p className="font-mono text-[11px] sm:text-xs tracking-[0.2em] text-zinc-400 uppercase">
           {identity.title}
         </p>
       </div>

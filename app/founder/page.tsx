@@ -14,21 +14,25 @@ import { FounderCta } from '@/components/founder/founder-cta';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Cristian Văduva — Founder, Builder & Advisor | AETHER',
+  title: 'Cristian Văduva — Founder of AETHER | Builder & Advisor',
   description:
-    'Cristian Văduva — founder, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
+    'Cristian Văduva — founder of AETHER, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
+  alternates: {
+    canonical: '/founder',
+  },
   openGraph: {
-    title: 'Cristian Văduva — Founder, Builder & Advisor | AETHER',
+    title: 'Cristian Văduva — Founder of AETHER | Builder & Advisor',
     description:
-      'Cristian Văduva — founder, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
+      'Cristian Văduva — founder of AETHER, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
+    url: '/founder',
     type: 'profile',
     siteName: 'AETHER',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cristian Văduva — Founder, Builder & Advisor | AETHER',
+    title: 'Cristian Văduva — Founder of AETHER | Builder & Advisor',
     description:
-      'Cristian Văduva — founder, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
+      'Cristian Văduva — founder of AETHER, advisor and builder across real estate, insurance, finance and technology. Explore AETHER and the digital ecosystem behind it.',
   },
 };
 
@@ -92,10 +96,10 @@ export default function FounderPage() {
         </div>
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono text-zinc-400">
-          <Link href="/" className="hover:text-white transition-colors">Aether Home</Link>
+          <Link href="/" className="hover:text-white transition-colors">AETHER Home</Link>
           <Link href="/legal" className="hover:text-white transition-colors">Legal Center</Link>
           <a href="#my-creations" className="hover:text-white transition-colors">Creations</a>
-          <a href="#why-aether" className="hover:text-white transition-colors">Why Aether</a>
+          <a href="#why-aether" className="hover:text-white transition-colors">Why AETHER</a>
           <a href="#work-with-me" className="hover:text-white transition-colors">Work With Me</a>
           <a href="https://aixluxury.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">AiXLuxury</a>
           <a href="https://os.aixluxury.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">AiX OS</a>
@@ -105,7 +109,7 @@ export default function FounderPage() {
           <span>© {new Date().getFullYear()} Cristian Văduva. All rights reserved.</span>
           <span className="inline-flex items-center gap-1.5 text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Aether Flagship</span>
+            <span>AETHER Flagship</span>
           </span>
         </div>
       </footer>

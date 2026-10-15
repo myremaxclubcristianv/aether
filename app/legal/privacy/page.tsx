@@ -6,6 +6,9 @@ import { LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Privacy Policy | AETHER Legal Center',
   description: 'How AETHER collects, processes, protects and retains personal data in accordance with GDPR principles.',
+  alternates: {
+    canonical: '/legal/privacy',
+  },
 };
 
 export default function PrivacyPolicyPage() {
@@ -34,7 +37,7 @@ export default function PrivacyPolicyPage() {
           01 — WHO WE ARE & DATA CONTROLLER
         </h2>
         <p className="text-sm leading-relaxed font-light">
-          This Privacy Policy explains how personal data is processed in connection with the <strong>AETHER</strong> application, accessible at <code>https://aether-sable-delta.vercel.app</code> and associated domains.
+          This Privacy Policy explains how personal data is processed in connection with the <strong>AETHER</strong> application, accessible at <code>https://aether.cristianvaduva.com</code> and associated platform infrastructure.
         </p>
         <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1 text-xs font-mono">
           <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Data Controller Information</span>

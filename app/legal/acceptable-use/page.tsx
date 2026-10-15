@@ -5,7 +5,10 @@ import { LEGAL_METADATA } from '@/lib/legal';
 
 export const metadata: Metadata = {
   title: 'Acceptable Use Policy | AETHER Legal Center',
-  description: 'Technical, security and behavioral rules governing acceptable use of the AETHER platform and APIs.',
+  description: 'Technical, security and behavioral rules governing acceptable use of the AETHER platform, infrastructure and APIs.',
+  alternates: {
+    canonical: '/legal/acceptable-use',
+  },
 };
 
 export default function AcceptableUsePolicyPage() {
@@ -14,7 +17,7 @@ export default function AcceptableUsePolicyPage() {
       {/* Header */}
       <div className="flex flex-col gap-3 border-b border-zinc-900 pb-8">
         <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-semibold">
-          SECURITY & COMPLIANCE
+          SECURITY, ACCESS & COMPLIANCE
         </span>
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           ACCEPTABLE USE POLICY
@@ -34,7 +37,7 @@ export default function AcceptableUsePolicyPage() {
           01 — PURPOSE & SCOPE
         </h2>
         <p className="text-sm leading-relaxed font-light">
-          This Acceptable Use Policy defines the rules governing interactions with AETHER&apos;s infrastructure, endpoints, APIs, and client interfaces. It applies to all users, automated clients, and visitors.
+          This Acceptable Use Policy defines the rules governing interactions with AETHER&apos;s infrastructure, endpoints, APIs, and client interfaces. It applies to all registered members, automated visitors, API consumers, and general site traffic.
         </p>
       </section>
 
@@ -50,29 +53,43 @@ export default function AcceptableUsePolicyPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-light">
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-medium">Automated Scraping & Crawling</span>
-            <p className="text-zinc-400 text-[11px]">
-              Extracting user profiles, proofs, images, or telemetry data using automated bots, spiders, or headless browsers without express permission.
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Extracting user profiles, Proof records, uploaded images, or telemetry data using automated bots, scrapers, spiders, or headless browsers without express written permission.
             </p>
           </div>
 
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-medium">Rate-Limit & API Abuse</span>
-            <p className="text-zinc-400 text-[11px]">
-              Flooding endpoints, bypassing sliding-window rate limiters, or attempting denial-of-service (DoS/DDoS) attacks against AETHER servers.
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Flooding endpoints, bypassing sliding-window rate limiters, or attempting denial-of-service (DoS/DDoS) attacks against AETHER servers or Supabase storage buckets.
             </p>
           </div>
 
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-medium">Unauthorized Access & Probing</span>
-            <p className="text-zinc-400 text-[11px]">
-              Attempting to access administrative interfaces, bypass Row-Level Security (RLS), probe endpoints for vulnerabilities, or access other users&apos; private records.
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Attempting to access administrative interfaces, bypass PostgreSQL Row-Level Security (RLS) policies, probe endpoints for vulnerabilities, or access other users&apos; private records.
             </p>
           </div>
 
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
             <span className="font-mono text-white font-medium">Metric & Score Manipulation</span>
-            <p className="text-zinc-400 text-[11px]">
-              Deploying automated scripts to artificially inflate Flex Scores, falsify daily streaks, or forge proof timestamps.
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Deploying automated scripts to artificially inflate Flex Scores, falsify daily streaks, forge proof timestamps, or manipulate community ranking algorithms.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
+            <span className="font-mono text-white font-medium">Deceptive Content & Spam Networks</span>
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Creating puppet accounts, syndicating spam, publishing malicious redirect URLs, or uploading unauthorized copyrighted images in Proof submissions.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-850 flex flex-col gap-1">
+            <span className="font-mono text-white font-medium">Security Controls Tampering</span>
+            <p className="text-zinc-400 text-[11px] leading-relaxed">
+              Interfering with Content Security Policy (CSP) headers, CORS configurations, session cookies, or HSTS transport security mechanisms.
             </p>
           </div>
         </div>

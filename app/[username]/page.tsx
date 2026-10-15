@@ -18,6 +18,7 @@ const RESERVED_USERNAMES = new Set([
   'login',
   'onboarding',
   'profile',
+  'auth',
 ]);
 
 interface PageProps {
@@ -34,8 +35,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!username || RESERVED_USERNAMES.has(username.toLowerCase())) {
     return {
-      title: 'Profile • Aether',
-      description: 'Track real achievements and verified proofs on Aether.',
+      title: 'Profile • AETHER',
+      description: 'Track real achievements and verified proofs on AETHER.',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -49,21 +54,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const flexScore = profile?.flex_score ?? 0;
   const streak = profile?.streak ?? 0;
   const description = profile?.bio 
-    ? `${profile.bio} • ${flexScore} Flex Score • ${streak > 0 ? `${streak}d streak • ` : ''}Aether`
-    : `@${username} has earned ${flexScore} Flex Score on Aether. Track real achievements and verified proofs.`;
+    ? `${profile.bio} • ${flexScore} Flex Score • ${streak > 0 ? `${streak}d streak • ` : ''}AETHER`
+    : `@${username} has earned ${flexScore} Flex Score on AETHER. Track real achievements and verified proofs.`;
 
   return {
-    title: `@${username} (${flexScore} Flex Score) • Aether`,
+    title: `@${username} (${flexScore} Flex Score) • AETHER`,
     description,
+    alternates: {
+      canonical: `/${username}`,
+    },
     openGraph: {
-      title: `@${username} • Aether`,
+      title: `@${username} • AETHER`,
       description,
       type: 'profile',
-      url: `https://aether-sable-delta.vercel.app/${username}`,
+      url: `/${username}`,
+      siteName: 'AETHER',
     },
     twitter: {
       card: 'summary',
-      title: `@${username} • Aether`,
+      title: `@${username} • AETHER`,
       description,
     },
   };

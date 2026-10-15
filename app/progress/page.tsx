@@ -17,6 +17,10 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Personal Progress & Archive • AETHER',
   description: 'Your real-world timeline of proofs, consistency streaks, 30-day velocity and milestones.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function ProgressPage() {

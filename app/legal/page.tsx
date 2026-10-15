@@ -6,6 +6,9 @@ import { LEGAL_DOCS, LEGAL_METADATA } from '@/lib/legal';
 export const metadata: Metadata = {
   title: 'Legal Center — Transparency & Governance | AETHER',
   description: 'Transparency, privacy, platform terms and user rights behind the AETHER social proof system.',
+  alternates: {
+    canonical: '/legal',
+  },
 };
 
 export default function LegalHubPage() {

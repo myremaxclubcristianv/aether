@@ -120,7 +120,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, initialUser }) => 
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-950/40'
               }`}
             >
-              <span>FOUNDER</span>
+              <div className="flex flex-col text-left">
+                <span className="font-semibold text-zinc-300 group-hover:text-white">FOUNDER</span>
+                <span className="text-[9px] text-zinc-600 group-hover:text-zinc-400">Cristian Văduva</span>
+              </div>
               <span className="text-[10px] text-zinc-600 group-hover:text-zinc-400">↗</span>
             </Link>
 

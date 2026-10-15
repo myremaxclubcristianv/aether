@@ -41,13 +41,13 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({
   const isOwnProfile = viewerId === profile.id;
 
   const handleShare = async () => {
-    const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/${profile.username}` : `https://aether-sable-delta.vercel.app/${profile.username}`;
+    const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/${profile.username}` : `https://aether.cristianvaduva.com/${profile.username}`;
     
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `@${profile.username} on Aether`,
-          text: `Check out @${profile.username}'s verified achievements and Flex Score on Aether.`,
+          title: `@${profile.username} on AETHER`,
+          text: `Check out @${profile.username}'s verified achievements and Flex Score on AETHER.`,
           url: profileUrl,
         });
 
