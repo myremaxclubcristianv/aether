@@ -32,6 +32,10 @@ export async function createProofServer(params: CreateProofServerParams): Promis
     throw new Error('Unauthorized proof creation attempt.');
   }
 
+  // Retrieve session token to propagate to Storage if available
+  const { data: { session } } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+  const sessionToken = session?.access_token;
+
   // 3. Handle profile existence safely and deterministically
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: rawProfile, error: profileFetchErr } = await (supabase.from('profiles') as any)
@@ -100,13 +104,25 @@ export async function createProofServer(params: CreateProofServerParams): Promis
     const arrayBuffer = await params.imageFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    const uploadOptions: {
+      cacheControl: string;
+      upsert: boolean;
+      contentType: string;
+      headers?: Record<string, string>;
+    } = {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: mime,
+    };
+    if (sessionToken) {
+      uploadOptions.headers = {
+        Authorization: `Bearer ${sessionToken}`,
+      };
+    }
+
     const { error: uploadError } = await supabase.storage
       .from('proof-images')
-      .upload(fileName, buffer, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: mime,
-      });
+      .upload(fileName, buffer, uploadOptions);
 
     if (uploadError) {
       const rawMsg = uploadError.message || String(uploadError);

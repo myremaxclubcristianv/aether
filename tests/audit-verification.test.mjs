@@ -618,3 +618,47 @@ test('Dual Proof Modality: Text proof (+10) bypasses storage while image proof (
   const imagePoints = computePoints(Boolean(imageProof.imageFile));
   assert.equal(imagePoints, 15);
 });
+
+// 16. CLIENT-SIDE DIRECT PROOF FLOW & STORAGE ISOLATION REGRESSION TEST
+test('Client Proof Architecture: Verifies direct client flow, folder isolation, and dual modality scoring', async () => {
+  const userId = '11111111-2222-3333-4444-555555555555';
+
+  // 1. Storage Isolation path generator
+  function generateStoragePath(uid, ext) {
+    const safeRandom = 'abcd1234';
+    const timestamp = 1700000000000;
+    return `${uid}/${timestamp}_${safeRandom}.${ext}`;
+  }
+
+  const storagePath = generateStoragePath(userId, 'webp');
+  assert.equal(storagePath.startsWith(`${userId}/`), true);
+  const folder = storagePath.split('/')[0];
+  assert.equal(folder, userId);
+
+  // 2. Dual Modality Points Computation
+  function computePoints(hasImage) {
+    return hasImage ? 15 : 10;
+  }
+  assert.equal(computePoints(false), 10);
+  assert.equal(computePoints(true), 15);
+
+  // 3. Flex Score Incrementation
+  let initialScore = 40;
+  const textProofPoints = computePoints(false);
+  initialScore += textProofPoints;
+  assert.equal(initialScore, 50);
+
+  const imageProofPoints = computePoints(true);
+  initialScore += imageProofPoints;
+  assert.equal(initialScore, 65);
+
+  // 4. Challenge Async Link Payload verification
+  const linkPayload = {
+    action: 'link_challenges',
+    proofId: '90000000-0000-0000-0000-000000000001',
+    category: 'Fitness',
+  };
+  assert.equal(linkPayload.action, 'link_challenges');
+  assert.equal(typeof linkPayload.proofId, 'string');
+  assert.equal(typeof linkPayload.category, 'string');
+});

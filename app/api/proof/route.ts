@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createProofServer } from '@/lib/proof/server';
+import { createClient } from '@/lib/supabase/server';
+import { linkProofToEligibleChallenges } from '@/lib/challenges';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +29,20 @@ export async function POST(request: NextRequest) {
       }
     } else {
       const body = await request.json().catch(() => ({}));
+
+      // Non-blocking challenge synchronization action
+      if (body.action === 'link_challenges' && typeof body.proofId === 'string') {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+        }
+        await linkProofToEligibleChallenges(body.proofId, user.id, body.category || 'General').catch((err) => {
+          console.error('[AETHER PROOF API] Challenge link error:', err);
+        });
+        return NextResponse.json({ ok: true });
+      }
+
       category = body.category || 'General';
       caption = body.caption || '';
       if (typeof body.userId === 'string' && body.userId.trim()) {
