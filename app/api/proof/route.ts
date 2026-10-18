@@ -43,7 +43,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true, proof }, { status: 201 });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create proof.';
+    let errorMessage = 'Failed to create proof.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (
+      error &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof (error as { message: unknown }).message === 'string'
+    ) {
+      errorMessage = (error as { message: string }).message;
+    }
+
+    console.error('[AETHER PROOF API] POST /api/proof failure:', {
+      error,
+      resolvedMessage: errorMessage,
+    });
 
     let status = 400;
     if (errorMessage.includes('Authentication required')) {

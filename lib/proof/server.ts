@@ -34,10 +34,14 @@ export async function createProofServer(params: CreateProofServerParams): Promis
 
   // 3. Handle profile existence safely and deterministically
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: rawProfile } = await (supabase.from('profiles') as any)
+  const { data: rawProfile, error: profileFetchErr } = await (supabase.from('profiles') as any)
     .select('id, flex_score, streak, username')
     .eq('id', user.id)
     .maybeSingle();
+
+  if (profileFetchErr) {
+    console.error('[AETHER PROOF] Profile fetch error:', profileFetchErr.message || profileFetchErr);
+  }
 
   let profile = rawProfile;
 
@@ -60,7 +64,9 @@ export async function createProofServer(params: CreateProofServerParams): Promis
       .maybeSingle();
 
     if (createErr || !createdProfile) {
-      console.error('[AETHER PROOF] Missing profile repair error:', createErr?.message);
+      const errCode = createErr?.code || 'UNKNOWN';
+      const errMsg = createErr?.message || 'Failed to initialize profile.';
+      console.error(`[AETHER PROOF] Missing profile repair error: [${errCode}] ${errMsg}`);
       throw new Error('User profile is required to create a proof. Please complete onboarding.');
     }
     profile = createdProfile;
@@ -73,6 +79,7 @@ export async function createProofServer(params: CreateProofServerParams): Promis
     throw new Error('Please describe what you actually accomplished.');
   }
 
+  let uploadedFileName: string | null = null;
   let imageUrl: string | null = null;
 
   // 5. Image upload handling with strict MIME and size validation
@@ -102,9 +109,16 @@ export async function createProofServer(params: CreateProofServerParams): Promis
       });
 
     if (uploadError) {
-      console.error('[AETHER PROOF] Storage upload error:', uploadError.message);
-      throw uploadError;
+      const rawMsg = uploadError.message || String(uploadError);
+      console.error('[AETHER PROOF] Storage upload error:', rawMsg);
+      const hasNoSuchBucketCode = typeof uploadError === 'object' && uploadError !== null && 'code' in uploadError && (uploadError as Record<string, unknown>).code === 'NoSuchBucket';
+      if (rawMsg.includes('Bucket not found') || hasNoSuchBucketCode) {
+        throw new Error('Image storage bucket "proof-images" is not found. Please complete storage setup in Supabase.');
+      }
+      throw new Error(`Image upload failed: ${rawMsg}`);
     }
+
+    uploadedFileName = fileName;
 
     const { data } = supabase.storage
       .from('proof-images')
@@ -130,8 +144,24 @@ export async function createProofServer(params: CreateProofServerParams): Promis
     .single();
 
   if (proofError || !proof) {
-    console.error('[AETHER PROOF] Proof insertion error:', proofError?.message);
-    throw proofError || new Error('Failed to create proof record.');
+    const errCode = proofError?.code || 'UNKNOWN';
+    const errMsg = proofError?.message || 'Failed to create proof record.';
+    console.error(`[AETHER PROOF] Proof insertion error: [${errCode}] ${errMsg}`, {
+      details: proofError?.details,
+      hint: proofError?.hint,
+    });
+
+    // Cleanup uploaded storage object to prevent orphan files if DB insertion fails
+    if (uploadedFileName) {
+      await supabase.storage
+        .from('proof-images')
+        .remove([uploadedFileName])
+        .catch((cleanupErr) => {
+          console.error('[AETHER PROOF] Failed to cleanup orphaned image:', cleanupErr);
+        });
+    }
+
+    throw new Error(errMsg);
   }
 
   // 8. Update user's flex_score authoritatively in profiles table
@@ -144,7 +174,7 @@ export async function createProofServer(params: CreateProofServerParams): Promis
     .eq('id', user.id);
 
   if (profileError) {
-    console.error('[AETHER PROOF] Failed to update flex score:', profileError.message);
+    console.error('[AETHER PROOF] Failed to update flex score:', profileError.message || profileError);
   }
 
   // 9. Authoritatively link proof to active eligible challenges

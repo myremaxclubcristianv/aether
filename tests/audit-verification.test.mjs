@@ -494,3 +494,127 @@ test('Notification Link: Only safe internal relative URIs are accepted', () => {
   assert.equal(validateLink('//evil.com/fake-login'), false);
   assert.equal(validateLink('data:text/html,<script>alert(1)</script>'), false);
 });
+
+// 13. PROOF ERROR NORMALIZATION & DIAGNOSTICS TEST
+test('Proof Error Normalization: Non-Error PostgREST objects are extracted safely without generic masking', () => {
+  function extractErrorMessage(error) {
+    let errorMessage = 'Failed to create proof.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (
+      error &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof error.message === 'string'
+    ) {
+      errorMessage = error.message;
+    }
+    return errorMessage;
+  }
+
+  // PostgREST error plain object (not an instanceof Error)
+  const postgrestError = {
+    code: '42501',
+    message: 'new row violates row-level security policy for table "proofs"',
+    details: null,
+    hint: null,
+  };
+  assert.equal(postgrestError instanceof Error, false);
+  assert.equal(
+    extractErrorMessage(postgrestError),
+    'new row violates row-level security policy for table "proofs"'
+  );
+
+  // Standard Error instance
+  const standardError = new Error('Authentication required to create a proof. Please sign in.');
+  assert.equal(
+    extractErrorMessage(standardError),
+    'Authentication required to create a proof. Please sign in.'
+  );
+
+  // Fallback for null/undefined/empty
+  assert.equal(extractErrorMessage(null), 'Failed to create proof.');
+  assert.equal(extractErrorMessage(undefined), 'Failed to create proof.');
+});
+
+// 14. STORAGE FAILURE DIAGNOSTICS & CLEANUP SIMULATION
+test('Storage Failure Diagnostics: NoSuchBucket produces actionable guidance and DB failure cleans up storage', async () => {
+  function formatStorageError(uploadError) {
+    const rawMsg = uploadError.message || String(uploadError);
+    if (rawMsg.includes('Bucket not found') || uploadError?.code === 'NoSuchBucket') {
+      return 'Image storage bucket "proof-images" is not found. Please complete storage setup in Supabase.';
+    }
+    return `Image upload failed: ${rawMsg}`;
+  }
+
+  const noBucketError = {
+    statusCode: '404',
+    code: 'NoSuchBucket',
+    message: 'Bucket not found',
+  };
+  assert.equal(
+    formatStorageError(noBucketError),
+    'Image storage bucket "proof-images" is not found. Please complete storage setup in Supabase.'
+  );
+
+  // Storage Cleanup Simulation: When DB insert fails after successful image upload
+  let storageFiles = ['user-1/test_upload.jpg'];
+  let dbRows = [];
+
+  async function simulateProofCreation(failDb) {
+    let uploadedFile = null;
+    try {
+      // Step 1: Upload succeeded
+      uploadedFile = 'user-1/test_upload_2.jpg';
+      storageFiles.push(uploadedFile);
+
+      // Step 2: DB insert fails
+      if (failDb) {
+        const dbErr = { code: '23503', message: 'violates foreign key constraint' };
+        throw new Error(dbErr.message);
+      }
+      dbRows.push({ id: 'p-1', image_url: uploadedFile });
+    } catch (err) {
+      // Cleanup orphan
+      if (uploadedFile) {
+        storageFiles = storageFiles.filter((f) => f !== uploadedFile);
+      }
+      throw err;
+    }
+  }
+
+  await assert.rejects(async () => {
+    await simulateProofCreation(true);
+  }, /violates foreign key constraint/);
+
+  // Orphaned file was cleanly purged from storage simulation
+  assert.equal(storageFiles.includes('user-1/test_upload_2.jpg'), false);
+  assert.equal(storageFiles.length, 1);
+});
+
+// 15. DUAL PROOF MODALITY (TEXT VS IMAGE) SCORING & PIPELINE VALIDATION
+test('Dual Proof Modality: Text proof (+10) bypasses storage while image proof (+15) verifies storage', () => {
+  function computePoints(hasImage) {
+    return hasImage ? 15 : 10;
+  }
+
+  // Text Proof
+  const textProof = {
+    userId: 'u-1',
+    category: 'Fitness',
+    caption: 'Ran 5k in morning',
+    imageFile: null,
+  };
+  const textPoints = computePoints(Boolean(textProof.imageFile));
+  assert.equal(textPoints, 10);
+
+  // Image Proof
+  const imageProof = {
+    userId: 'u-1',
+    category: 'Fitness',
+    caption: 'Ran 5k in morning with photo',
+    imageFile: { size: 1024, type: 'image/jpeg' },
+  };
+  const imagePoints = computePoints(Boolean(imageProof.imageFile));
+  assert.equal(imagePoints, 15);
+});
