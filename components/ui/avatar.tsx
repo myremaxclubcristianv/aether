@@ -55,6 +55,7 @@ export const Avatar: React.FC<AvatarProps> = ({
           alt={alt}
           width={pixelSizes[size]}
           height={pixelSizes[size]}
+          unoptimized
           onError={() => setHasError(true)}
           className="h-full w-full object-cover"
         />

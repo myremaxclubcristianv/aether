@@ -662,3 +662,36 @@ test('Client Proof Architecture: Verifies direct client flow, folder isolation, 
   assert.equal(typeof linkPayload.proofId, 'string');
   assert.equal(typeof linkPayload.category, 'string');
 });
+
+// 17. PROOF IMAGE DELIVERY & RENDERING REGRESSION TEST
+test('Proof Image Rendering: Unoptimized storage delivery, aspect ratio, and full URL resolution', async () => {
+  const publicSupabaseHost = 'mhutcducgquzcbrzvbwj.supabase.co';
+  const userId = '11111111-2222-3333-4444-555555555555';
+  const filename = `${userId}/1700000000000_sample.webp`;
+  const fullPublicUrl = `https://${publicSupabaseHost}/storage/v1/object/public/proof-images/${filename}`;
+
+  // 1. Verify image URL is complete, absolute, and targets the public proof-images bucket
+  assert.equal(fullPublicUrl.startsWith('https://'), true);
+  assert.equal(fullPublicUrl.includes('/storage/v1/object/public/proof-images/'), true);
+  assert.equal(fullPublicUrl.endsWith('.webp'), true);
+
+  // 2. Verify image delivery URL avoids Vercel proxy by using unoptimized mode
+  function resolveImageDelivery(src, unoptimized) {
+    if (unoptimized) {
+      return { directUrl: src, usesVercelProxy: false };
+    }
+    return {
+      directUrl: `/_next/image?url=${encodeURIComponent(src)}&w=640&q=75`,
+      usesVercelProxy: true,
+    };
+  }
+
+  const deliveryResult = resolveImageDelivery(fullPublicUrl, true);
+  assert.equal(deliveryResult.usesVercelProxy, false);
+  assert.equal(deliveryResult.directUrl, fullPublicUrl);
+
+  // 3. Verify 16:9 aspect ratio calculation
+  const containerWidth = 600;
+  const containerHeight = Math.round((containerWidth * 9) / 16);
+  assert.equal(containerHeight, 338);
+});

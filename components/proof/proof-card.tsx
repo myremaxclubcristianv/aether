@@ -66,15 +66,22 @@ export const ProofCard: React.FC<ProofCardProps> = ({ proof, author }) => {
 
       {/* Image Media Preview */}
       {proof.imageUrl && (
-        <div className="relative rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 aspect-[16/9] w-full mt-1">
+        <a
+          href={proof.imageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative block rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 aspect-[16/9] w-full mt-1 cursor-pointer group/img focus:outline-none focus:ring-1 focus:ring-zinc-700"
+          title="Open proof image in full resolution"
+        >
           <Image
             src={proof.imageUrl}
             alt={proof.caption || 'Proof media'}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover group-hover:scale-[1.01] transition-transform duration-300"
+            className="w-full h-full object-cover group-hover/img:scale-[1.01] transition-transform duration-300"
           />
-        </div>
+        </a>
       )}
 
       {/* Footer Verification Signature */}
